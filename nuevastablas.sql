@@ -164,10 +164,13 @@ alter table public.tb_sica_catalogo_usuarios_sica
     owner to postgres;
 
 -- Crear tabla tb_sica_atenciones con secuencia personalizada
+-- Crear secuencia personalizada para id_atencion
 CREATE SEQUENCE tb_sica_atenciones_id_atencion_seq;
-create table if not exists public.tb_sica_atenciones
+
+-- Crear tabla tb_sica_atenciones con id_atencion como BIGINT
+CREATE TABLE IF NOT EXISTS public.tb_sica_atenciones
 (
-    id_atencion                  integer NOT NULL DEFAULT nextval('tb_sica_atenciones_id_atencion_seq'),
+    id_atencion                  bigint NOT NULL DEFAULT nextval('tb_sica_atenciones_id_atencion_seq'),
     id_sucursal                  integer not null,
     ticket                       varchar(14) unique,
     asunto                       varchar(150),
@@ -198,15 +201,20 @@ create table if not exists public.tb_sica_atenciones
     primary key (id_atencion, id_sucursal)
 );
 
-alter table public.tb_sica_atenciones
-    owner to postgres;
+-- Cambiar el propietario de la tabla
+ALTER TABLE public.tb_sica_atenciones
+    OWNER TO postgres;
+
 
 -- Crear tabla tb_sica_mensajes con secuencia personalizada
+-- Crear secuencia personalizada para id_mensaje
 CREATE SEQUENCE tb_sica_mensajes_id_mensaje_seq;
-create table if not exists public.tb_sica_mensajes
+
+-- Crear tabla tb_sica_mensajes con id_mensaje y id_atencion como BIGINT
+CREATE TABLE IF NOT EXISTS public.tb_sica_mensajes
 (
-    id_mensaje          integer NOT NULL DEFAULT nextval('tb_sica_mensajes_id_mensaje_seq'),
-    id_atencion         integer not null,
+    id_mensaje          bigint NOT NULL DEFAULT nextval('tb_sica_mensajes_id_mensaje_seq'),
+    id_atencion         bigint not null, -- Cambiar a BIGINT
     id_sucursal         integer not null,
     descripcion         text,
     fecha_creacion      timestamp,
@@ -214,18 +222,23 @@ create table if not exists public.tb_sica_mensajes
     id_usuario_creacion integer
         references public.tb_catalogo_usuarios,
     primary key (id_mensaje, id_atencion, id_sucursal),
-    foreign key (id_atencion, id_sucursal) references public.tb_sica_atenciones
+    foreign key (id_atencion, id_sucursal) references public.tb_sica_atenciones(id_atencion, id_sucursal)
 );
 
-alter table public.tb_sica_mensajes
-    owner to postgres;
+-- Cambiar el propietario de la tabla
+ALTER TABLE public.tb_sica_mensajes
+    OWNER TO postgres;
 
--- Crear tabla tb_sica_transferencias_atenciones con secuencia personalizada
+
+
+-- Crear secuencia personalizada para id_transferencia
 CREATE SEQUENCE tb_sica_transferencias_atenciones_id_transferencia_seq;
-create table if not exists public.tb_sica_transferencias_atenciones
+
+-- Crear tabla tb_sica_transferencias_atenciones con id_transferencia y id_atencion como BIGINT
+CREATE TABLE IF NOT EXISTS public.tb_sica_transferencias_atenciones
 (
-    id_transferencia        integer NOT NULL DEFAULT nextval('tb_sica_transferencias_atenciones_id_transferencia_seq'),
-    id_atencion             integer not null,
+    id_transferencia        bigint NOT NULL DEFAULT nextval('tb_sica_transferencias_atenciones_id_transferencia_seq'), -- Cambiado a BIGINT
+    id_atencion             bigint not null, 
     id_sucursal             integer not null,
     id_departamento_origen  integer
         references public.tb_sica_catalogo_departamentos,
@@ -236,11 +249,13 @@ create table if not exists public.tb_sica_transferencias_atenciones
         references public.tb_catalogo_usuarios,
     motivo                  text,
     primary key (id_transferencia, id_atencion, id_sucursal),
-    foreign key (id_atencion, id_sucursal) references public.tb_sica_atenciones
+    foreign key (id_atencion, id_sucursal) references public.tb_sica_atenciones(id_atencion, id_sucursal)
 );
 
-alter table public.tb_sica_transferencias_atenciones
-    owner to postgres;
+-- Cambiar el propietario de la tabla
+ALTER TABLE public.tb_sica_transferencias_atenciones
+    OWNER TO postgres;
+
 
 -- Crear tabla tb_sica_seguimiento con secuencia personalizada
 CREATE SEQUENCE tb_sica_seguimiento_id_seguimiento_seq;
@@ -257,3 +272,15 @@ CREATE TABLE IF NOT EXISTS public.tb_sica_seguimiento
 
 ALTER TABLE public.tb_sica_seguimiento
     OWNER TO postgres;
+
+create table if not exists public.tb_sica_relacion_usuarios_grupo_responsables
+(
+    id_usuario                   integer not null
+        references public.tb_catalogo_usuarios,
+    id_grupo_usuario_responsable integer not null
+        references public.tb_sica_grupo_usuarios_responsables,
+    primary key (id_usuario, id_grupo_usuario_responsable)
+);
+
+alter table public.tb_sica_relacion_usuarios_grupo_responsables
+    owner to postgres;

@@ -422,9 +422,10 @@ $$;
 
 ALTER FUNCTION public.fn_sica_actividades_detalle_obtener_consulta() OWNER TO postgres;
 
-DROP FUNCTION IF EXISTS public.fn_sica_atencion_actualizar_estatus(integer, integer, integer);
+DROP FUNCTION IF EXISTS public.fn_sica_atencion_actualizar_estatus(bigint, integer, integer);
+
 CREATE OR REPLACE FUNCTION public.fn_sica_atencion_actualizar_estatus(
-    p_id_atencion integer, 
+    p_id_atencion bigint,  
     p_id_sucursal integer, 
     p_id_estatus integer)
 RETURNS void
@@ -448,7 +449,7 @@ BEGIN
         fecha
     ) VALUES (
         'tb_sica_atenciones',
-        p_id_atencion,
+        p_id_atencion,  -- El valor de BIGINT ahora se pasa aquí
         'UPDATE ESTATUS',
         current_setting('app.user_id')::integer,
         CURRENT_TIMESTAMP
@@ -474,11 +475,14 @@ EXCEPTION
 END;
 $$;
 
-ALTER FUNCTION public.fn_sica_atencion_actualizar_estatus(integer, integer, integer) OWNER TO postgres;
+-- Cambiar el propietario de la función
+ALTER FUNCTION public.fn_sica_atencion_actualizar_estatus(bigint, integer, integer) OWNER TO postgres;
 
-DROP FUNCTION IF EXISTS public.fn_sica_atencion_cerrar(integer, integer, integer);
+
+DROP FUNCTION IF EXISTS public.fn_sica_atencion_cerrar(bigint, integer, integer);
+
 CREATE OR REPLACE FUNCTION public.fn_sica_atencion_cerrar(
-    p_id_atencion INTEGER,
+    p_id_atencion BIGINT, -- Cambiado a BIGINT
     p_id_sucursal INTEGER,
     p_id_usuario_cierre INTEGER
 )
@@ -546,16 +550,19 @@ EXCEPTION
 END;
 $BODY$;
 
-ALTER FUNCTION public.fn_sica_atencion_cerrar(integer, integer, integer)
+-- Cambiar el propietario de la función
+ALTER FUNCTION public.fn_sica_atencion_cerrar(bigint, integer, integer)
     OWNER TO postgres;
 
 
-DROP FUNCTION IF EXISTS public.fn_sica_atencion_obtener_por_id(integer, integer);
+
+DROP FUNCTION IF EXISTS public.fn_sica_atencion_obtener_por_id(bigint, integer);
+
 CREATE OR REPLACE FUNCTION public.fn_sica_atencion_obtener_por_id(
-    p_id_atencion integer, 
+    p_id_atencion bigint, -- Cambiado a BIGINT
     p_id_sucursal integer)
 RETURNS TABLE(
-    id_atencion integer, 
+    id_atencion bigint, -- Cambiado a BIGINT
     ticket character varying, 
     asunto character varying, 
     descripcion text, 
@@ -607,7 +614,70 @@ BEGIN
 END;
 $$;
 
-ALTER FUNCTION public.fn_sica_atencion_obtener_por_id(integer, integer) OWNER TO postgres;
+-- Cambiar el propietario de la función
+ALTER FUNCTION public.fn_sica_atencion_obtener_por_id(bigint, integer) OWNER TO postgres;
+
+
+DROP FUNCTION IF EXISTS public.fn_sica_atencion_obtener_por_ticket(varchar);
+
+CREATE OR REPLACE FUNCTION public.fn_sica_atencion_obtener_por_ticket(
+    p_ticket character varying)
+RETURNS TABLE(
+    id_atencion bigint, -- Cambiado a BIGINT
+    ticket character varying, 
+    asunto character varying, 
+    descripcion text, 
+    sucursal_descripcion character varying, 
+    grupo_responsable_nombre character varying, 
+    fecha_inicio timestamp without time zone, 
+    usuario_reporta integer, 
+    usuario_responsable integer, 
+    fecha_cierre timestamp without time zone, 
+    usuario_cierre integer, 
+    fecha_modificacion timestamp without time zone, 
+    fecha_cancelacion timestamp without time zone, 
+    usuario_cancelo integer, 
+    id_estatus integer, 
+    enviar_alerta boolean, 
+    id_actividad integer, 
+    id_grupo_usuario_responsable integer, 
+    id_departamento_actual integer, 
+    id_departamento_anterior integer)
+LANGUAGE plpgsql
+AS
+$$
+BEGIN
+    RETURN QUERY
+    SELECT
+        a.id_atencion,
+        a.ticket,
+        a.asunto,
+        a.descripcion,
+        s.descripcion AS sucursal_descripcion,
+        g.nombre AS grupo_responsable_nombre,
+        a.fecha_inicio,
+        a.usuario_reporta,
+        a.fecha_cierre,
+        a.usuario_cierre,
+        a.fecha_modificacion,
+        a.fecha_cancelacion,
+        a.usuario_cancelo,
+        a.id_estatus,
+        a.enviar_alerta,
+        a.id_actividad,
+        a.id_grupo_usuario_responsable,
+        a.id_departamento_actual,
+        a.id_departamento_anterior
+    FROM public.tb_sica_atenciones a
+    JOIN public.tb_catalogo_sucursales s ON a.id_sucursal = s.id_sucursal
+    JOIN public.tb_sica_grupo_usuarios_responsables g ON a.id_grupo_usuario_responsable = g.id_grupo_usuario_responsable
+    WHERE a.ticket = p_ticket;
+END;
+$$;
+
+-- Cambiar el propietario de la función
+ALTER FUNCTION public.fn_sica_atencion_obtener_por_ticket(varchar) OWNER TO postgres;
+
 
 DROP FUNCTION IF EXISTS public.fn_sica_atencion_obtener_por_ticket(varchar);
 CREATE OR REPLACE FUNCTION public.fn_sica_atencion_obtener_por_ticket(
@@ -667,67 +737,10 @@ $$;
 
 ALTER FUNCTION public.fn_sica_atencion_obtener_por_ticket(varchar) OWNER TO postgres;
 
-DROP FUNCTION IF EXISTS public.fn_sica_atencion_obtener_por_ticket(varchar);
-CREATE OR REPLACE FUNCTION public.fn_sica_atencion_obtener_por_ticket(
-    p_ticket character varying)
-RETURNS TABLE(
-    id_atencion integer, 
-    ticket character varying, 
-    asunto character varying, 
-    descripcion text, 
-    sucursal_descripcion character varying, 
-    grupo_responsable_nombre character varying, 
-    fecha_inicio timestamp without time zone, 
-    usuario_reporta integer, 
-    usuario_responsable integer, 
-    fecha_cierre timestamp without time zone, 
-    usuario_cierre integer, 
-    fecha_modificacion timestamp without time zone, 
-    fecha_cancelacion timestamp without time zone, 
-    usuario_cancelo integer, 
-    id_estatus integer, 
-    enviar_alerta boolean, 
-    id_actividad integer, 
-    id_grupo_usuario_responsable integer, 
-    id_departamento_actual integer, 
-    id_departamento_anterior integer)
-LANGUAGE plpgsql
-AS
-$$
-BEGIN
-    RETURN QUERY
-    SELECT
-        a.id_atencion,
-        a.ticket,
-        a.asunto,
-        a.descripcion,
-        s.descripcion AS sucursal_descripcion,
-        g.nombre AS grupo_responsable_nombre,
-        a.fecha_inicio,
-        a.usuario_reporta,
-        a.fecha_cierre,
-        a.usuario_cierre,
-        a.fecha_modificacion,
-        a.fecha_cancelacion,
-        a.usuario_cancelo,
-        a.id_estatus,
-        a.enviar_alerta,
-        a.id_actividad,
-        a.id_grupo_usuario_responsable,
-        a.id_departamento_actual,
-        a.id_departamento_anterior
-    FROM public.tb_sica_atenciones a
-    JOIN public.tb_catalogo_sucursales s ON a.id_sucursal = s.id_sucursal
-    JOIN public.tb_sica_grupo_usuarios_responsables g ON a.id_grupo_usuario_responsable = g.id_grupo_usuario_responsable
-    WHERE a.ticket = p_ticket;
-END;
-$$;
+DROP FUNCTION IF EXISTS public.fn_sica_atencion_transferir(bigint, integer, integer, integer, text);
 
-ALTER FUNCTION public.fn_sica_atencion_obtener_por_ticket(varchar) OWNER TO postgres;
-
-DROP FUNCTION IF EXISTS public.fn_sica_atencion_transferir(integer, integer, integer, integer, text);
 CREATE OR REPLACE FUNCTION public.fn_sica_atencion_transferir(
-    p_id_atencion integer, 
+    p_id_atencion bigint,  -- Cambiado a BIGINT
     p_id_sucursal integer, 
     p_id_departamento_destino integer, 
     p_usuario_transferencia integer, 
@@ -804,9 +817,12 @@ EXCEPTION
 END;
 $$;
 
-ALTER FUNCTION public.fn_sica_atencion_transferir(integer, integer, integer, integer, text) OWNER TO postgres;
+-- Cambiar el propietario de la función
+ALTER FUNCTION public.fn_sica_atencion_transferir(bigint, integer, integer, integer, text) OWNER TO postgres;
+
 
 DROP FUNCTION IF EXISTS public.fn_sica_atenciones_filtrar_obtener_detalladas_por_usuario(integer, integer, integer, integer, timestamp, timestamp, varchar);
+
 CREATE OR REPLACE FUNCTION public.fn_sica_atenciones_filtrar_obtener_detalladas_por_usuario(
     p_id_usuario integer, 
     p_estado integer DEFAULT NULL::integer, 
@@ -816,7 +832,7 @@ CREATE OR REPLACE FUNCTION public.fn_sica_atenciones_filtrar_obtener_detalladas_
     p_fecha_fin timestamp without time zone DEFAULT NULL::timestamp without time zone, 
     p_ticket character varying DEFAULT NULL::character varying)
 RETURNS TABLE(
-    id_atencion integer, 
+    id_atencion bigint, -- Cambiado a BIGINT
     ticket character varying, 
     usuario_reporto character varying, 
     usuario_grupo_asignado character varying, 
@@ -858,7 +874,9 @@ BEGIN
 END;
 $$;
 
+-- Cambiar el propietario de la función
 ALTER FUNCTION public.fn_sica_atenciones_filtrar_obtener_detalladas_por_usuario(integer, integer, integer, integer, timestamp, timestamp, varchar) OWNER TO postgres;
+
 
 DROP FUNCTION IF EXISTS public.fn_sica_actividad_actualizar(integer, varchar, text, numeric, integer, boolean, integer, integer);
 CREATE OR REPLACE FUNCTION public.fn_sica_actividad_actualizar(
@@ -976,6 +994,7 @@ ALTER FUNCTION public.fn_sica_actividades_por_departamento_consulta(integer) OWN
 
 
 DROP FUNCTION IF EXISTS public.fn_sica_atencion_insertar(varchar, text, integer, integer, timestamp, integer, integer, integer, integer);
+
 CREATE OR REPLACE FUNCTION public.fn_sica_atencion_insertar(
     p_asunto character varying, 
     p_descripcion text, 
@@ -986,12 +1005,12 @@ CREATE OR REPLACE FUNCTION public.fn_sica_atencion_insertar(
     p_id_actividad integer, 
     p_id_grupo_usuario_responsable integer, 
     p_id_departamento_actual integer) 
-RETURNS integer
+RETURNS bigint  -- Cambiado a BIGINT
 LANGUAGE plpgsql
 AS
 $$
 DECLARE
-    v_id_atencion integer;
+    v_id_atencion bigint;  -- Cambiado a BIGINT
     v_ticket varchar;
     _json jsonb;
 BEGIN
@@ -1064,9 +1083,12 @@ EXCEPTION
 END;
 $$;
 
+-- Cambiar el propietario de la función
 ALTER FUNCTION public.fn_sica_atencion_insertar(varchar, text, integer, integer, timestamp, integer, integer, integer, integer) OWNER TO postgres;
 
+
 DROP FUNCTION IF EXISTS public.fn_sica_atencion_nueva_insertar(varchar, text, integer, integer, integer, integer, integer);
+
 CREATE OR REPLACE FUNCTION public.fn_sica_atencion_nueva_insertar(
     p_asunto character varying, 
     p_descripcion text, 
@@ -1080,7 +1102,7 @@ LANGUAGE plpgsql
 AS
 $$
 DECLARE
-    v_id_atencion integer;
+    v_id_atencion bigint;  -- Cambiado a BIGINT
     _json jsonb;
 BEGIN
     -- Insertar la nueva atención en la tabla tb_sica_atenciones
@@ -1113,22 +1135,8 @@ BEGIN
         p_id_departamento_actual,
         current_timestamp,
         current_timestamp
-    ) RETURNING id_atencion INTO v_id_atencion;
+    ) RETURNING id_atencion INTO v_id_atencion;  -- Cambiado a BIGINT
 
-    -- Registrar la operación en la tabla de seguimiento
-    INSERT INTO public.tb_sica_seguimiento (
-        tabla_name,
-        id_registro,
-        accion,
-        usuario_id,
-        fecha
-    ) VALUES (
-        'tb_sica_atenciones',
-        v_id_atencion,
-        'INSERT',
-        p_usuario_reporta,  -- Se registra el usuario que reporta como el creador
-        CURRENT_TIMESTAMP
-    );
 
     -- Generar el JSONB de la atención insertada para consolidación
     SELECT to_jsonb(t) INTO _json
@@ -1146,6 +1154,7 @@ BEGIN
 END;
 $$;
 
+-- Cambiar el propietario de la función
 ALTER FUNCTION public.fn_sica_atencion_nueva_insertar(varchar, text, integer, integer, integer, integer, integer) OWNER TO postgres;
 
 DROP FUNCTION IF EXISTS public.fn_sica_clasificacion_actividad_actualizar(integer, varchar, text, integer, boolean, integer);
@@ -2249,9 +2258,17 @@ $$;
 
 ALTER FUNCTION public.fn_sica_jefes_responsables_por_departamento_obtener_consulta(integer) OWNER TO postgres;
 
-DROP FUNCTION IF EXISTS public.fn_sica_mensajes_obtener_por_atencion(integer, integer);
-CREATE OR REPLACE FUNCTION public.fn_sica_mensajes_obtener_por_atencion(p_id_atencion integer, p_id_sucursal integer)
-RETURNS TABLE(id_mensaje integer, descripcion text, fecha_creacion timestamp without time zone, es_interno boolean, id_atencion integer, id_sucursal integer, id_usuario_creacion integer)
+DROP FUNCTION IF EXISTS public.fn_sica_mensajes_obtener_por_atencion(bigint, integer);
+
+CREATE OR REPLACE FUNCTION public.fn_sica_mensajes_obtener_por_atencion(p_id_atencion bigint, p_id_sucursal integer)
+RETURNS TABLE(
+    id_mensaje bigint,  -- Cambiado a BIGINT
+    descripcion text, 
+    fecha_creacion timestamp without time zone, 
+    es_interno boolean, 
+    id_atencion bigint,  -- Cambiado a BIGINT
+    id_sucursal integer, 
+    id_usuario_creacion integer)
 LANGUAGE plpgsql
 AS
 $$
@@ -2273,7 +2290,9 @@ BEGIN
 END;
 $$;
 
-ALTER FUNCTION public.fn_sica_mensajes_obtener_por_atencion(integer, integer) OWNER TO postgres;
+-- Cambiar el propietario de la función
+ALTER FUNCTION public.fn_sica_mensajes_obtener_por_atencion(bigint, integer) OWNER TO postgres;
+
 
 DROP FUNCTION IF EXISTS public.fn_sica_obtener_clasificaciones_por_id_departamento(integer);
 CREATE OR REPLACE FUNCTION public.fn_sica_obtener_clasificaciones_por_id_departamento(p_id_departamento integer)
@@ -2705,9 +2724,15 @@ $$;
 
 ALTER FUNCTION public.fn_sica_usuario_sica_obtener_todos_consulta() OWNER TO postgres;
 
-DROP FUNCTION IF EXISTS public.sica_mensajes_obtener_por_id_atencion(integer);
-CREATE OR REPLACE FUNCTION public.sica_mensajes_obtener_por_id_atencion(p_id_atencion integer)
-RETURNS TABLE(descripcion_departamento character varying, id_atencion integer, id_mensaje integer, descripcion_mensaje text, fecha_creacion timestamp without time zone)
+DROP FUNCTION IF EXISTS public.sica_mensajes_obtener_por_id_atencion(bigint);
+
+CREATE OR REPLACE FUNCTION public.sica_mensajes_obtener_por_id_atencion(p_id_atencion bigint) -- Cambiado a BIGINT
+RETURNS TABLE(
+    descripcion_departamento character varying, 
+    id_atencion bigint,  -- Cambiado a BIGINT
+    id_mensaje bigint,   -- Cambiado a BIGINT
+    descripcion_mensaje text, 
+    fecha_creacion timestamp without time zone)
 LANGUAGE plpgsql
 AS
 $$
@@ -2730,7 +2755,9 @@ BEGIN
 END;
 $$;
 
-ALTER FUNCTION public.sica_mensajes_obtener_por_id_atencion(integer) OWNER TO postgres;
+-- Cambiar el propietario de la función
+ALTER FUNCTION public.sica_mensajes_obtener_por_id_atencion(bigint) OWNER TO postgres;
+
 
 DROP FUNCTION IF EXISTS public.sica_usuario_a_grupo_asignar(integer, integer);
 CREATE OR REPLACE FUNCTION public.sica_usuario_a_grupo_asignar(p_id_usuario integer, p_id_grupo_usuario_responsable integer)
@@ -2826,15 +2853,20 @@ $$;
 
 ALTER FUNCTION public.fn_sica_actividades_obtener_todas_consulta() OWNER TO postgres;
 
-DROP FUNCTION IF EXISTS public.fn_sica_mensaje_agregar(text, boolean, integer, integer);
-CREATE OR REPLACE FUNCTION public.fn_sica_mensaje_agregar(p_descripcion text, p_es_interno boolean, p_id_atencion integer, p_id_usuario_creacion integer)
+DROP FUNCTION IF EXISTS public.fn_sica_mensaje_agregar(text, boolean, bigint, integer);
+
+CREATE OR REPLACE FUNCTION public.fn_sica_mensaje_agregar(
+    p_descripcion text, 
+    p_es_interno boolean, 
+    p_id_atencion bigint,  -- Cambiado a BIGINT
+    p_id_usuario_creacion integer)
 RETURNS void
 LANGUAGE plpgsql
 AS
 $$
 DECLARE
     _json jsonb;
-    v_id_mensaje integer;
+    v_id_mensaje bigint;  -- Cambiado a BIGINT
     v_id_sucursal integer;
 BEGIN
     -- Obtener la sucursal asociada a la atención
@@ -2842,7 +2874,7 @@ BEGIN
     FROM public.tb_sica_atenciones
     WHERE id_atencion = p_id_atencion;
 
-    -- Insertar el mensaje en la tabla tb_mensajes
+    -- Insertar el mensaje en la tabla tb_sica_mensajes
     INSERT INTO public.tb_sica_mensajes(
         id_mensaje,
         id_atencion,
@@ -2853,7 +2885,7 @@ BEGIN
         id_usuario_creacion
     )
     VALUES(
-        nextval('public.tb_sica_mensajes_id_mensaje_seq'),  -- Asumiendo que id_mensaje es un valor secuencial
+        nextval('public.tb_sica_mensajes_id_mensaje_seq'),  -- Secuencia para id_mensaje
         p_id_atencion,
         v_id_sucursal,
         p_descripcion,
@@ -2884,7 +2916,9 @@ EXCEPTION
 END;
 $$;
 
-ALTER FUNCTION public.fn_sica_mensaje_agregar(text, boolean, integer, integer) OWNER TO postgres;
+-- Cambiar el propietario de la función
+ALTER FUNCTION public.fn_sica_mensaje_agregar(text, boolean, bigint, integer) OWNER TO postgres;
+
 
 DROP FUNCTION IF EXISTS public.fn_sica_actividad_insertar(varchar, text, numeric, boolean, integer, integer, integer);
 CREATE OR REPLACE FUNCTION public.fn_sica_actividad_insertar(
@@ -2966,16 +3000,17 @@ ALTER FUNCTION public.fn_sica_actividad_insertar(varchar, text, numeric, boolean
 
 
 DROP FUNCTION IF EXISTS public.fn_sica_atenciones_obtener_detalladas_por_usuario(integer);
+
 CREATE OR REPLACE FUNCTION public.fn_sica_atenciones_obtener_detalladas_por_usuario(p_id_usuario integer)
 RETURNS TABLE(
-    id_atencion integer, 
+    id_atencion bigint,  -- Cambiado a BIGINT
     ticket character varying, 
     usuario_reporto character varying, 
     usuario_grupo_asignado character varying, 
     fecha_inicio timestamp without time zone, 
     estatus_descripcion character varying,
-    id_sucursal integer,  -- Nuevo campo para el ID de la sucursal
-    descripcion_sucursal character varying  -- Nuevo campo para el nombre o descripción de la sucursal
+    id_sucursal integer,  
+    descripcion_sucursal character varying  
 )
 LANGUAGE plpgsql
 AS
@@ -2989,8 +3024,8 @@ BEGIN
         gur.nombre AS usuario_grupo_asignado,
         a.fecha_inicio,
         e.descripcion AS estatus_descripcion,
-        a.id_sucursal,  -- Campo de id_sucursal
-        s.descripcion AS descripcion_sucursal  -- Campo de descripción de la sucursal
+        a.id_sucursal,  
+        s.descripcion AS descripcion_sucursal  
     FROM 
         public.tb_sica_atenciones a
         JOIN public.tb_catalogo_usuarios ur ON a.usuario_reporta = ur.id_usuario
@@ -2998,27 +3033,29 @@ BEGIN
         JOIN public.tb_sica_relacion_usuarios_grupo_responsables ugr ON a.id_grupo_usuario_responsable = ugr.id_grupo_usuario_responsable
         JOIN public.tb_catalogo_usuarios u ON ugr.id_usuario = u.id_usuario
         JOIN public.tb_sica_catalogo_estatus e ON a.id_estatus = e.id_estatus
-        JOIN public.tb_catalogo_sucursales s ON a.id_sucursal = s.id_sucursal  -- JOIN con la tabla de sucursales
+        JOIN public.tb_catalogo_sucursales s ON a.id_sucursal = s.id_sucursal  
     WHERE
         u.id_usuario = p_id_usuario
-        AND a.id_estatus IN (1, 2, 3);  -- Filtrar por los estados específicos
+        AND a.id_estatus IN (1, 2, 3);  
 END;
 $$;
 
 ALTER FUNCTION public.fn_sica_atenciones_obtener_detalladas_por_usuario(integer) OWNER TO postgres;
 
 
+
 DROP FUNCTION IF EXISTS public.fn_sica_atenciones_obtener_por_creador(integer);
+
 CREATE OR REPLACE FUNCTION public.fn_sica_atenciones_obtener_por_creador(p_id_usuario integer)
 RETURNS TABLE(
-    id_atencion integer, 
+    id_atencion bigint,  -- Cambiado a BIGINT
     ticket character varying, 
     usuario_reporto character varying, 
     fecha_inicio timestamp without time zone, 
     estatus_descripcion character varying,
-    usuario_grupo_asignado character varying,  -- Nombre del grupo responsable
-    id_sucursal integer,  -- ID de la sucursal
-    descripcion_sucursal character varying  -- Descripción de la sucursal
+    usuario_grupo_asignado character varying,  
+    id_sucursal integer,  
+    descripcion_sucursal character varying  
 )
 LANGUAGE plpgsql
 AS
@@ -3031,18 +3068,18 @@ BEGIN
         ur.nombre AS usuario_reporto,
         a.fecha_inicio,
         e.descripcion AS estatus_descripcion,
-        gru.nombre AS usuario_grupo_asignado,  -- Nombre del grupo responsable
-        a.id_sucursal,  -- ID de la sucursal
-        s.descripcion AS descripcion_sucursal  -- Descripción de la sucursal
+        gru.nombre AS usuario_grupo_asignado,  
+        a.id_sucursal,  
+        s.descripcion AS descripcion_sucursal  
     FROM 
         public.tb_sica_atenciones a
         JOIN public.tb_catalogo_usuarios ur ON a.usuario_reporta = ur.id_usuario
         JOIN public.tb_sica_catalogo_estatus e ON a.id_estatus = e.id_estatus
         LEFT JOIN public.tb_sica_grupo_usuarios_responsables gru ON a.id_grupo_usuario_responsable = gru.id_grupo_usuario_responsable
-        LEFT JOIN public.tb_catalogo_sucursales s ON a.id_sucursal = s.id_sucursal  -- JOIN para obtener el nombre de la sucursal
+        LEFT JOIN public.tb_catalogo_sucursales s ON a.id_sucursal = s.id_sucursal  
     WHERE
-        a.usuario_reporta = p_id_usuario  -- Filtrar por el usuario que creó la atención
-        AND a.id_estatus IN (1, 2, 3);  -- Filtrar por los estados específicos
+        a.usuario_reporta = p_id_usuario  
+        AND a.id_estatus IN (1, 2, 3);  
 END;
 $$;
 
@@ -3050,14 +3087,20 @@ ALTER FUNCTION public.fn_sica_atenciones_obtener_por_creador(integer) OWNER TO p
 
 
 
-DROP FUNCTION IF EXISTS public.fn_sica_insertar_mensaje(text, boolean, integer, integer);
-CREATE OR REPLACE FUNCTION public.fn_sica_insertar_mensaje(p_descripcion text, p_es_interno boolean, p_id_atencion integer, p_id_usuario_creacion integer)
-RETURNS integer
+
+DROP FUNCTION IF EXISTS public.fn_sica_insertar_mensaje(text, boolean, bigint, integer);
+
+CREATE OR REPLACE FUNCTION public.fn_sica_insertar_mensaje(
+    p_descripcion text, 
+    p_es_interno boolean, 
+    p_id_atencion bigint,  -- Cambiado a BIGINT
+    p_id_usuario_creacion integer)
+RETURNS bigint  -- Cambiado a BIGINT
 LANGUAGE plpgsql
 AS
 $$
 DECLARE
-    v_id_mensaje integer;
+    v_id_mensaje bigint;  -- Cambiado a BIGINT
     v_id_sucursal integer;
     _json jsonb;
 BEGIN
@@ -3066,7 +3109,7 @@ BEGIN
     FROM public.tb_sica_atenciones
     WHERE id_atencion = p_id_atencion;
 
-    -- Insertar el mensaje en la tabla tb_mensajes con fecha_creacion = CURRENT_TIMESTAMP
+    -- Insertar el mensaje en la tabla tb_sica_mensajes con fecha_creacion = CURRENT_TIMESTAMP
     INSERT INTO public.tb_sica_mensajes(
         id_mensaje,
         id_atencion,
@@ -3081,10 +3124,10 @@ BEGIN
         p_id_atencion,
         v_id_sucursal,
         p_descripcion,
-        CURRENT_TIMESTAMP, -- Inserta la fecha y hora actual
-        p_es_interno, -- Valor para es_interno proporcionado en la llamada a la función
+        CURRENT_TIMESTAMP,  -- Inserta la fecha y hora actual
+        p_es_interno,        -- Valor para es_interno proporcionado en la llamada a la función
         p_id_usuario_creacion
-    ) RETURNING id_mensaje INTO v_id_mensaje;
+    ) RETURNING id_mensaje INTO v_id_mensaje;  -- Cambiado a BIGINT
 
     -- Generar el JSONB del nuevo registro para consolidación
     SELECT to_jsonb(t) INTO _json
@@ -3111,12 +3154,14 @@ EXCEPTION
 END;
 $$;
 
-ALTER FUNCTION public.fn_sica_insertar_mensaje(text, boolean, integer, integer) OWNER TO postgres;
+-- Cambiar el propietario de la función
+ALTER FUNCTION public.fn_sica_insertar_mensaje(text, boolean, bigint, integer) OWNER TO postgres;
 
-DROP FUNCTION IF EXISTS public.fn_sica_atencion_cancelar(integer, integer, integer);
+
+DROP FUNCTION IF EXISTS public.fn_sica_atencion_cancelar(bigint, integer, integer);
 
 CREATE OR REPLACE FUNCTION public.fn_sica_atencion_cancelar(
-    p_id_atencion INTEGER,
+    p_id_atencion BIGINT,  -- Cambiado a BIGINT
     p_id_sucursal INTEGER,
     p_id_usuario_cancelo INTEGER
 )
@@ -3153,7 +3198,7 @@ BEGIN
             fecha
         ) VALUES (
             'tb_sica_atenciones', 
-            p_id_atencion, 
+            p_id_atencion,  -- Cambiado a BIGINT
             'CANCEL', 
             p_id_usuario_cancelo, 
             CURRENT_TIMESTAMP
@@ -3183,14 +3228,16 @@ EXCEPTION
 END;
 $BODY$;
 
-ALTER FUNCTION public.fn_sica_atencion_cancelar(integer, integer, integer)
+-- Cambiar el propietario de la función
+ALTER FUNCTION public.fn_sica_atencion_cancelar(bigint, integer, integer)
     OWNER TO postgres;
 
 
-DROP FUNCTION IF EXISTS public.fn_sica_atencion_leido(integer, integer);
+
+DROP FUNCTION IF EXISTS public.fn_sica_atencion_leido(bigint, integer);
 
 CREATE OR REPLACE FUNCTION public.fn_sica_atencion_leido(
-    p_id_atencion INTEGER,
+    p_id_atencion BIGINT,  -- Cambiado a BIGINT
     p_id_sucursal INTEGER
 )
 RETURNS VOID
@@ -3240,14 +3287,15 @@ EXCEPTION
 END;
 $BODY$;
 
-ALTER FUNCTION public.fn_sica_atencion_leido(integer, integer)
+ALTER FUNCTION public.fn_sica_atencion_leido(bigint, integer)
     OWNER TO postgres;
 
-DROP FUNCTION IF EXISTS public.fn_sica_atencion_en_ejecucion(integer, integer);
+
+DROP FUNCTION IF EXISTS public.fn_sica_atencion_en_ejecucion(bigint, integer);
 
 CREATE OR REPLACE FUNCTION public.fn_sica_atencion_en_ejecucion(
-    p_id_atencion integer,
-    p_id_sucursal integer)
+    p_id_atencion BIGINT,  -- Cambiado a BIGINT
+    p_id_sucursal INTEGER)
     RETURNS void
     LANGUAGE 'plpgsql'
     COST 100
@@ -3296,13 +3344,14 @@ EXCEPTION
 END;
 $BODY$;
 
-ALTER FUNCTION public.fn_sica_atencion_en_ejecucion(integer, integer)
+ALTER FUNCTION public.fn_sica_atencion_en_ejecucion(bigint, integer)
     OWNER TO postgres;
 
-DROP FUNCTION IF EXISTS public.fn_sica_atencion_cerrar(integer, integer, integer);
+
+DROP FUNCTION IF EXISTS public.fn_sica_atencion_cerrar(bigint, integer, integer);
 
 CREATE OR REPLACE FUNCTION public.fn_sica_atencion_cerrar(
-    p_id_atencion INTEGER,
+    p_id_atencion BIGINT,  -- Cambiado a BIGINT
     p_id_sucursal INTEGER,
     p_id_usuario_cierre INTEGER
 )
@@ -3339,7 +3388,7 @@ BEGIN
             fecha
         ) VALUES (
             'tb_sica_atenciones', 
-            p_id_atencion, 
+            p_id_atencion,  -- Cambiado a BIGINT
             'CLOSE', 
             p_id_usuario_cierre, 
             CURRENT_TIMESTAMP
@@ -3370,8 +3419,9 @@ EXCEPTION
 END;
 $BODY$;
 
-ALTER FUNCTION public.fn_sica_atencion_cerrar(integer, integer, integer)
+ALTER FUNCTION public.fn_sica_atencion_cerrar(bigint, integer, integer)
     OWNER TO postgres;
+
 
 DROP FUNCTION IF EXISTS public.fn_sica_grupo_responsable_actualizar(integer, character varying, text, integer, integer);
 
@@ -3635,11 +3685,12 @@ $$ LANGUAGE plpgsql;
 ALTER FUNCTION public.fn_sica_obtener_correos_por_grupo_responsable(integer)
 OWNER TO postgres;
 
-DROP FUNCTION IF EXISTS public.fn_sica_mensaje_insertar(text, boolean, integer, integer, integer);
+DROP FUNCTION IF EXISTS public.fn_sica_mensaje_insertar(text, boolean, bigint, integer, integer);
+
 CREATE OR REPLACE FUNCTION public.fn_sica_mensaje_insertar(
     p_descripcion text, 
     p_es_interno boolean, 
-    p_id_atencion integer, 
+    p_id_atencion BIGINT,  -- Cambiado a BIGINT
     p_id_usuario_creacion integer,
     p_id_sucursal integer
 )
@@ -3709,7 +3760,7 @@ EXCEPTION
 END;
 $$;
 
-ALTER FUNCTION public.fn_sica_mensaje_insertar(text, boolean, integer, integer, integer) OWNER TO postgres;
+ALTER FUNCTION public.fn_sica_mensaje_insertar(text, boolean, bigint, integer, integer) OWNER TO postgres;
 
 -- DROP FUNCTION para fn_sica_atenciones_filtrar_por_usuario_reporta
 DROP FUNCTION IF EXISTS public.fn_sica_atenciones_filtrar_por_usuario_reporta(integer, integer, integer, integer, timestamp without time zone, timestamp without time zone, character varying);
@@ -3722,17 +3773,24 @@ CREATE OR REPLACE FUNCTION public.fn_sica_atenciones_filtrar_por_usuario_reporta
     p_fecha_inicio timestamp without time zone DEFAULT NULL::timestamp without time zone,
     p_fecha_fin timestamp without time zone DEFAULT NULL::timestamp without time zone,
     p_ticket character varying DEFAULT NULL::character varying)
-    RETURNS TABLE(id_atencion integer, ticket character varying, usuario_reporto character varying, usuario_grupo_asignado character varying, fecha_inicio timestamp without time zone, estatus_descripcion character varying, id_sucursal integer, descripcion_sucursal character varying) 
+    RETURNS TABLE(
+        id_atencion bigint,  -- Cambiado a BIGINT
+        ticket character varying, 
+        usuario_reporto character varying, 
+        usuario_grupo_asignado character varying, 
+        fecha_inicio timestamp without time zone, 
+        estatus_descripcion character varying, 
+        id_sucursal integer, 
+        descripcion_sucursal character varying) 
     LANGUAGE 'plpgsql'
     COST 100
     VOLATILE PARALLEL UNSAFE
     ROWS 1000
-
 AS $BODY$
 BEGIN
     RETURN QUERY
     SELECT
-        a.id_atencion,
+        a.id_atencion,  -- Cambiado a BIGINT
         a.ticket,
         ur.nombre AS usuario_reporto,
         gur.nombre AS usuario_grupo_asignado,
@@ -3761,6 +3819,7 @@ ALTER FUNCTION public.fn_sica_atenciones_filtrar_por_usuario_reporta(integer, in
     OWNER TO postgres;
 
 
+
 -- DROP FUNCTION para fn_sica_atenciones_filtrar_por_grupo_usuario
 DROP FUNCTION IF EXISTS public.fn_sica_atenciones_filtrar_por_grupo_usuario(integer, integer, integer, integer, timestamp without time zone, timestamp without time zone, character varying);
 
@@ -3772,17 +3831,24 @@ CREATE OR REPLACE FUNCTION public.fn_sica_atenciones_filtrar_por_grupo_usuario(
     p_fecha_inicio timestamp without time zone DEFAULT NULL::timestamp without time zone,
     p_fecha_fin timestamp without time zone DEFAULT NULL::timestamp without time zone,
     p_ticket character varying DEFAULT NULL::character varying)
-    RETURNS TABLE(id_atencion integer, ticket character varying, usuario_reporto character varying, usuario_grupo_asignado character varying, fecha_inicio timestamp without time zone, estatus_descripcion character varying, id_sucursal integer, descripcion_sucursal character varying) 
+    RETURNS TABLE(
+        id_atencion bigint,  -- Cambiado a BIGINT
+        ticket character varying, 
+        usuario_reporto character varying, 
+        usuario_grupo_asignado character varying, 
+        fecha_inicio timestamp without time zone, 
+        estatus_descripcion character varying, 
+        id_sucursal integer, 
+        descripcion_sucursal character varying) 
     LANGUAGE 'plpgsql'
     COST 100
     VOLATILE PARALLEL UNSAFE
     ROWS 1000
-
 AS $BODY$
 BEGIN
     RETURN QUERY
     SELECT
-        a.id_atencion,
+        a.id_atencion,  -- Cambiado a BIGINT
         a.ticket,
         ur.nombre AS usuario_reporto,
         gur.nombre AS usuario_grupo_asignado,
@@ -3813,13 +3879,14 @@ ALTER FUNCTION public.fn_sica_atenciones_filtrar_por_grupo_usuario(integer, inte
     OWNER TO postgres;
 
 
+
 ----- views ---------->
 
 DROP VIEW IF EXISTS public.sica_vw_atencion_detalles;
 
 CREATE OR REPLACE VIEW public.sica_vw_atencion_detalles AS
 SELECT 
-    a.id_atencion,
+    a.id_atencion,  -- Cambiado a BIGINT
     a.ticket,
     a.asunto,
     a.descripcion,
@@ -3836,7 +3903,7 @@ SELECT
     CASE 
         WHEN a.id_estatus = 3 THEN NOW() - a.fecha_inicio_ejecucion
         ELSE NULL
-    END AS tiempo_transcurrido -- Nuevo campo calculado para el tiempo transcurrido en ejecución
+    END AS tiempo_transcurrido -- Campo calculado para el tiempo transcurrido en ejecución
 FROM 
     tb_sica_atenciones a
     JOIN tb_catalogo_sucursales s ON a.id_sucursal = s.id_sucursal
@@ -3844,6 +3911,7 @@ FROM
     JOIN tb_sica_catalogo_estatus e ON a.id_estatus = e.id_estatus
     JOIN tb_sica_catalogo_actividades act ON a.id_actividad = act.id_actividad
     JOIN tb_sica_grupo_usuarios_responsables gr ON a.id_grupo_usuario_responsable = gr.id_grupo_usuario_responsable;
+
 
 
 ALTER TABLE public.sica_vw_atencion_detalles OWNER TO postgres;
@@ -3856,7 +3924,7 @@ CREATE OR REPLACE VIEW public.sica_vw_atenciones_usuario
  usuario_cierre, fecha_modificacion, fecha_cancelacion, usuario_cancelo, id_estatus, enviar_alerta,
  id_actividad, id_grupo_usuario_responsable, id_departamento_actual, id_departamento_anterior, id_usuario)
 AS
-SELECT a.id_atencion,
+SELECT a.id_atencion,  -- Cambiado a BIGINT
        a.ticket,
        a.asunto,
        a.descripcion,
@@ -3881,6 +3949,7 @@ JOIN public.tb_catalogo_usuarios u ON ugr.id_usuario = u.id_usuario;
 
 ALTER TABLE public.sica_vw_atenciones_usuario OWNER TO postgres;
 
+
 DROP VIEW IF EXISTS public.sica_vw_atenciones_usuario_detalladas;
 
 CREATE OR REPLACE VIEW public.sica_vw_atenciones_usuario_detalladas
@@ -3890,7 +3959,7 @@ SELECT a.ticket,
        a.asunto,
        a.descripcion,
        a.fecha_inicio,
-       a.id_sucursal,  -- Agregamos el id_sucursal aquí
+       a.id_sucursal,  -- Referencia del ID de la sucursal
        s.descripcion AS sucursal_descripcion,
        gur.nombre    AS grupo_responsable_nombre,
        u.id_usuario
@@ -3901,6 +3970,7 @@ JOIN public.tb_sica_relacion_usuarios_grupo_responsables ugr ON a.id_grupo_usuar
 JOIN public.tb_catalogo_usuarios u ON ugr.id_usuario = u.id_usuario;
 
 ALTER TABLE public.sica_vw_atenciones_usuario_detalladas OWNER TO postgres;
+
 
 
 
