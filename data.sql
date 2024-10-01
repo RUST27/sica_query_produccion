@@ -5,21 +5,21 @@
 
 -- datos a insertar en tablas
 
-INSERT INTO public.tb_catalogo_tablas (descripcion, consolidacion_global, es_movimiento, tiene_secuencia)
-VALUES 
-    ('tb_sica_catalogo_gerencias', true, false, true),
-    ('tb_sica_catalogo_grupos_usuarios', true, false, true),
-    ('tb_sica_catalogo_departamentos', true, false, true),
-    ('tb_sica_grupo_usuarios_responsables', true, false, true),
-    ('tb_sica_relacion_usuarios_grupo_responsables', true, false, false),
-    ('tb_sica_catalogo_clasificacion_actividades', true, false, true),
-    ('tb_sica_catalogo_grupo_actividades', true, false, true),
-    ('tb_sica_catalogo_actividades', true, false, true),
-    ('tb_sica_catalogo_estatus', true, false, true),
-    ('tb_sica_catalogo_usuarios_sica', true, false, true),
-    ('tb_sica_atenciones', false, true, true),
-    ('tb_sica_mensajes', false, true, true),
-    ('tb_sica_transferencias_atenciones', false, true, true);
+--INSERT INTO public.tb_catalogo_tablas (descripcion, consolidacion_global, es_movimiento, tiene_secuencia)
+--VALUES 
+    --('tb_sica_catalogo_gerencias', true, false, true),
+    --('tb_sica_catalogo_grupos_usuarios', true, false, true),
+    --('tb_sica_catalogo_departamentos', true, false, true),
+    --('tb_sica_grupo_usuarios_responsables', true, false, true),
+    --('tb_sica_relacion_usuarios_grupo_responsables', true, false, false),
+    --('tb_sica_catalogo_clasificacion_actividades', true, false, true),
+    --('tb_sica_catalogo_grupo_actividades', true, false, true),
+    --('tb_sica_catalogo_actividades', true, false, true),
+    --('tb_sica_catalogo_estatus', true, false, true),
+    --('tb_sica_catalogo_usuarios_sica', true, false, true),
+    --('tb_sica_atenciones', false, true, true),
+    --('tb_sica_mensajes', false, true, true),
+    --('tb_sica_transferencias_atenciones', false, true, true);
 
 INSERT INTO public.tb_sica_catalogo_estatus (descripcion, clave, fecha_creacion, fecha_modificacion)
 VALUES
@@ -379,3 +379,29 @@ VALUES
 ('SOLICITUD DE INVENTARIO', 'SOLICITUD DE INVENTARIO', 48.00, false, 26, 7),
 ('AJUSTES DE INVENTARIO', 'AJUSTES DE INVENTARIO', 48.00, false, 26, 7),
 ('OTROS', 'OTROS', 48.00, false, 26, 7);
+
+INSERT INTO public.tb_sica_catalogo_usuarios_sica (
+    responsable, 
+    jefe_area, 
+    correo, 
+    es_staff, 
+    id_grupo_usuario, 
+    id_usuario, 
+    id_departamento, 
+    id_gerencia, 
+    baja
+) VALUES (
+    true,              
+    true,            
+    'id2.sistemas@724.com.mx', 
+    false,              
+    1,                 
+    3238,               
+    3,                 
+    5,                 
+    false              
+);
+
+
+INSERT INTO public.tb_sica_relacion_usuarios_grupo_responsables (id_usuario, id_grupo_usuario_responsable)
+VALUES (3238, 3); 
