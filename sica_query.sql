@@ -1148,7 +1148,7 @@ BEGIN
         _json,
         'i',
         'tb_sica_atenciones',
-        NULL
+        ''
     );
 
 END;
@@ -3315,7 +3315,7 @@ ALTER FUNCTION public.fn_sica_atencion_leido(bigint, integer)
 DROP FUNCTION IF EXISTS public.fn_sica_atencion_en_ejecucion(bigint, integer);
 
 CREATE OR REPLACE FUNCTION public.fn_sica_atencion_en_ejecucion(
-    p_id_atencion integer,
+    p_id_atencion bigint,
     p_id_sucursal integer)
     RETURNS void
     LANGUAGE 'plpgsql'
@@ -3365,7 +3365,7 @@ EXCEPTION
 END;
 $BODY$;
 
-ALTER FUNCTION public.fn_sica_atencion_en_ejecucion(integer, integer)
+ALTER FUNCTION public.fn_sica_atencion_en_ejecucion(bigint, integer)
     OWNER TO postgres;
 
 
