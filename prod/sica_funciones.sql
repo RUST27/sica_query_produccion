@@ -2760,6 +2760,7 @@ CREATE OR REPLACE FUNCTION public.fn_sica_atenciones_obtener_detalladas_por_usua
 RETURNS TABLE(
     id_atencion bigint,  -- Cambiado a BIGINT
     ticket character varying, 
+    asunto character varying,  -- Nuevo campo "asunto" agregado
     usuario_reporto character varying, 
     usuario_grupo_asignado character varying, 
     fecha_inicio timestamp without time zone, 
@@ -2775,6 +2776,7 @@ BEGIN
     SELECT 
         a.id_atencion,
         a.ticket,
+        a.asunto,  -- Seleccionar el campo "asunto"
         ur.nombre AS usuario_reporto,
         gur.nombre AS usuario_grupo_asignado,
         a.fecha_inicio,
@@ -2799,12 +2801,14 @@ ALTER FUNCTION public.fn_sica_atenciones_obtener_detalladas_por_usuario(integer)
 
 
 
+
 DROP FUNCTION IF EXISTS public.fn_sica_atenciones_obtener_por_creador(integer);
 
 CREATE OR REPLACE FUNCTION public.fn_sica_atenciones_obtener_por_creador(p_id_usuario integer)
 RETURNS TABLE(
     id_atencion bigint,  -- Cambiado a BIGINT
     ticket character varying, 
+    asunto character varying,  -- Nuevo campo "asunto" agregado
     usuario_reporto character varying, 
     fecha_inicio timestamp without time zone, 
     estatus_descripcion character varying,
@@ -2820,6 +2824,7 @@ BEGIN
     SELECT 
         a.id_atencion,
         a.ticket,
+        a.asunto,  -- Seleccionar el campo "asunto"
         ur.nombre AS usuario_reporto,
         a.fecha_inicio,
         e.descripcion AS estatus_descripcion,
@@ -2839,6 +2844,7 @@ END;
 $$;
 
 ALTER FUNCTION public.fn_sica_atenciones_obtener_por_creador(integer) OWNER TO postgres;
+
 
 
 
@@ -3070,7 +3076,7 @@ ALTER FUNCTION public.fn_sica_atencion_leido(bigint, integer)
 DROP FUNCTION IF EXISTS public.fn_sica_atencion_en_ejecucion(bigint, integer);
 
 CREATE OR REPLACE FUNCTION public.fn_sica_atencion_en_ejecucion(
-    p_id_atencion integer,
+    p_id_atencion bigint,
     p_id_sucursal integer)
     RETURNS void
     LANGUAGE 'plpgsql'
@@ -3079,6 +3085,7 @@ CREATE OR REPLACE FUNCTION public.fn_sica_atencion_en_ejecucion(
 AS $BODY$
 DECLARE
     _json jsonb;
+    _current_status integer;
 BEGIN
     -- Verificar si la atención existe
     IF EXISTS (
@@ -3087,28 +3094,39 @@ BEGIN
         WHERE id_atencion = p_id_atencion
         AND id_sucursal = p_id_sucursal
     ) THEN
-        -- Actualizar el estatus de la atención a '3' (En Ejecución)
-        UPDATE public.tb_sica_atenciones
-        SET id_estatus = 3,
-            fecha_inicio_ejecucion = CURRENT_TIMESTAMP, -- Registrar el inicio de la ejecución
-            fecha_modificacion = CURRENT_TIMESTAMP
+        -- Obtener el estado actual de la atención
+        SELECT id_estatus INTO _current_status
+        FROM public.tb_sica_atenciones
         WHERE id_atencion = p_id_atencion
         AND id_sucursal = p_id_sucursal;
 
-        -- Generar el JSONB del registro actualizado para consolidación
-        SELECT to_jsonb(t) INTO _json
-        FROM public.tb_sica_atenciones t
-        WHERE t.id_atencion = p_id_atencion
-        AND t.id_sucursal = p_id_sucursal;
+        -- Solo actualizar a estatus '3' si el estatus actual es '2'
+        IF _current_status = 2 THEN
+            UPDATE public.tb_sica_atenciones
+            SET id_estatus = 3,
+                fecha_inicio_ejecucion = CURRENT_TIMESTAMP, -- Registrar el inicio de la ejecución
+                fecha_modificacion = CURRENT_TIMESTAMP
+            WHERE id_atencion = p_id_atencion
+            AND id_sucursal = p_id_sucursal;
 
-        -- Llamar a la función de consolidación específica para sucursal
-        PERFORM public.fn_consolidador_registrarmovimiento_para_sucursalx(
-            _json,
-            'u', -- 'u' indica que es una actualización
-            'tb_sica_atenciones',
-            p_id_sucursal,
-            NULL
-        );
+            -- Generar el JSONB del registro actualizado para consolidación
+            SELECT to_jsonb(t) INTO _json
+            FROM public.tb_sica_atenciones t
+            WHERE t.id_atencion = p_id_atencion
+            AND t.id_sucursal = p_id_sucursal;
+
+            -- Llamar a la función de consolidación específica para sucursal
+            PERFORM public.fn_consolidador_registrarmovimiento_para_sucursalx(
+                _json,
+                'u', -- 'u' indica que es una actualización
+                'tb_sica_atenciones',
+                p_id_sucursal,
+                NULL
+            );
+        ELSE
+            -- Si el estatus no es '2', no se hace la actualización
+            RAISE NOTICE 'La atención con id % y sucursal % no está en estatus 2.', p_id_atencion, p_id_sucursal;
+        END IF;
     ELSE
         -- Si la atención no existe, se lanza un error
         RAISE EXCEPTION 'Atención con id % y sucursal % no encontrada.', p_id_atencion, p_id_sucursal;
@@ -3120,8 +3138,9 @@ EXCEPTION
 END;
 $BODY$;
 
-ALTER FUNCTION public.fn_sica_atencion_en_ejecucion(integer, integer)
+ALTER FUNCTION public.fn_sica_atencion_en_ejecucion(bigint, integer)
     OWNER TO postgres;
+
 
 
 DROP FUNCTION IF EXISTS public.fn_sica_atencion_cerrar(bigint, integer, integer);
@@ -3552,6 +3571,7 @@ CREATE OR REPLACE FUNCTION public.fn_sica_atenciones_filtrar_por_usuario_reporta
     RETURNS TABLE(
         id_atencion bigint,  -- Cambiado a BIGINT
         ticket character varying, 
+        asunto character varying,  -- Añadir el campo "asunto"
         usuario_reporto character varying, 
         usuario_grupo_asignado character varying, 
         fecha_inicio timestamp without time zone, 
@@ -3568,6 +3588,7 @@ BEGIN
     SELECT
         a.id_atencion,  -- Cambiado a BIGINT
         a.ticket,
+        a.asunto,  -- Añadir el campo "asunto"
         ur.nombre AS usuario_reporto,
         gur.nombre AS usuario_grupo_asignado,
         a.fecha_inicio,
@@ -3596,6 +3617,7 @@ ALTER FUNCTION public.fn_sica_atenciones_filtrar_por_usuario_reporta(integer, in
 
 
 
+
 -- DROP FUNCTION para fn_sica_atenciones_filtrar_por_grupo_usuario
 DROP FUNCTION IF EXISTS public.fn_sica_atenciones_filtrar_por_grupo_usuario(integer, integer, integer, integer, timestamp without time zone, timestamp without time zone, character varying);
 
@@ -3610,6 +3632,7 @@ CREATE OR REPLACE FUNCTION public.fn_sica_atenciones_filtrar_por_grupo_usuario(
     RETURNS TABLE(
         id_atencion bigint,  -- Cambiado a BIGINT
         ticket character varying, 
+        asunto character varying,  -- Añadir el campo "asunto"
         usuario_reporto character varying, 
         usuario_grupo_asignado character varying, 
         fecha_inicio timestamp without time zone, 
@@ -3626,6 +3649,7 @@ BEGIN
     SELECT
         a.id_atencion,  -- Cambiado a BIGINT
         a.ticket,
+        a.asunto,  -- Añadir el campo "asunto"
         ur.nombre AS usuario_reporto,
         gur.nombre AS usuario_grupo_asignado,
         a.fecha_inicio,
@@ -3653,6 +3677,7 @@ $BODY$;
 
 ALTER FUNCTION public.fn_sica_atenciones_filtrar_por_grupo_usuario(integer, integer, integer, integer, timestamp without time zone, timestamp without time zone, character varying)
     OWNER TO postgres;
+
 
 
 
