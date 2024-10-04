@@ -1,7 +1,307 @@
+-- Borrar las tablas en cascada
+DROP TABLE IF EXISTS public.tb_sica_catalogo_gerencias CASCADE;
+DROP TABLE IF EXISTS public.tb_sica_catalogo_grupos_usuarios CASCADE;
+DROP TABLE IF EXISTS public.tb_sica_catalogo_departamentos CASCADE;
+DROP TABLE IF EXISTS public.tb_sica_grupo_usuarios_responsables CASCADE;
+DROP TABLE IF EXISTS public.tb_sica_relacion_usuarios_grupo_responsables CASCADE;
+DROP TABLE IF EXISTS public.tb_sica_catalogo_clasificacion_actividades CASCADE;
+DROP TABLE IF EXISTS public.tb_sica_catalogo_grupo_actividades CASCADE;
+DROP TABLE IF EXISTS public.tb_sica_catalogo_actividades CASCADE;
+DROP TABLE IF EXISTS public.tb_sica_catalogo_estatus CASCADE;
+DROP TABLE IF EXISTS public.tb_sica_catalogo_usuarios_sica CASCADE;
+DROP TABLE IF EXISTS public.tb_sica_atenciones CASCADE;
+DROP TABLE IF EXISTS public.tb_sica_mensajes CASCADE;
+DROP TABLE IF EXISTS public.tb_sica_transferencias_atenciones CASCADE;
+DROP TABLE IF EXISTS public.tb_sica_seguimiento CASCADE;
 
 
--- <================================================ >
+-- Crear tabla tb_sica_catalogo_gerencias con secuencia personalizada
+DROP SEQUENCE IF EXISTS tb_sica_catalogo_gerencias_id_gerencia_seq;
+CREATE SEQUENCE tb_sica_catalogo_gerencias_id_gerencia_seq;
+create table if not exists public.tb_sica_catalogo_gerencias
+(
+    id_gerencia        integer NOT NULL DEFAULT nextval('tb_sica_catalogo_gerencias_id_gerencia_seq'),
+    descripcion        varchar(150),
+    baja               boolean,
+    fecha_creacion     timestamp default CURRENT_TIMESTAMP,
+    fecha_modificacion timestamp default CURRENT_TIMESTAMP,
+    primary key (id_gerencia)
+);
 
+alter table public.tb_sica_catalogo_gerencias
+    owner to postgres;
+
+-- Crear tabla tb_sica_catalogo_grupos_usuarios con secuencia personalizada
+DROP SEQUENCE IF EXISTS tb_sica_catalogo_grupos_usuarios_id_grupo_usuario_seq;
+CREATE SEQUENCE tb_sica_catalogo_grupos_usuarios_id_grupo_usuario_seq;
+create table if not exists public.tb_sica_catalogo_grupos_usuarios
+(
+    id_grupo_usuario   integer NOT NULL DEFAULT nextval('tb_sica_catalogo_grupos_usuarios_id_grupo_usuario_seq'),
+    descripcion        varchar(100),
+    fecha_creacion     timestamp default CURRENT_TIMESTAMP,
+    fecha_modificacion timestamp default CURRENT_TIMESTAMP,
+    baja               boolean,
+    primary key (id_grupo_usuario)
+);
+
+alter table public.tb_sica_catalogo_grupos_usuarios
+    owner to postgres;
+
+-- Crear tabla tb_sica_catalogo_departamentos con secuencia personalizada
+DROP SEQUENCE IF EXISTS tb_sica_catalogo_departamentos_id_departamento_seq;
+CREATE SEQUENCE tb_sica_catalogo_departamentos_id_departamento_seq;
+create table if not exists public.tb_sica_catalogo_departamentos
+(
+    id_departamento    integer NOT NULL DEFAULT nextval('tb_sica_catalogo_departamentos_id_departamento_seq'),
+    descripcion        varchar(100),
+    baja               boolean,
+    id_gerencia        integer
+        references public.tb_sica_catalogo_gerencias,
+    fecha_creacion     timestamp default CURRENT_TIMESTAMP,
+    fecha_modificacion timestamp default CURRENT_TIMESTAMP,
+    primary key (id_departamento)
+);
+
+alter table public.tb_sica_catalogo_departamentos
+    owner to postgres;
+
+-- Crear tabla tb_sica_grupo_usuarios_responsables con secuencia personalizada
+DROP SEQUENCE IF EXISTS tb_sica_grupo_usuarios_responsables_id_grupo_usuario_responsable_seq;
+CREATE SEQUENCE tb_sica_grupo_usuarios_responsables_id_grupo_usuario_responsable_seq;
+create table if not exists public.tb_sica_grupo_usuarios_responsables
+(
+    id_grupo_usuario_responsable integer NOT NULL DEFAULT nextval('tb_sica_grupo_usuarios_responsables_id_grupo_usuario_responsable_seq'),
+    nombre                       varchar(100),
+    descripcion                  text,
+    id_departamento              integer
+        references public.tb_sica_catalogo_departamentos,
+    fecha_creacion               timestamp default CURRENT_TIMESTAMP,
+    fecha_modificacion           timestamp default CURRENT_TIMESTAMP,
+    baja                         boolean,
+    primary key (id_grupo_usuario_responsable)
+);
+
+alter table public.tb_sica_grupo_usuarios_responsables
+    owner to postgres;
+
+-- Crear tabla tb_sica_catalogo_clasificacion_actividades con secuencia personalizada
+DROP SEQUENCE IF EXISTS tb_sica_catalogo_clasificacion_actividades_id_clasificacion_actividad_seq;
+CREATE SEQUENCE tb_sica_catalogo_clasificacion_actividades_id_clasificacion_actividad_seq;
+create table if not exists public.tb_sica_catalogo_clasificacion_actividades
+(
+    id_clasificacion_actividad integer NOT NULL DEFAULT nextval('tb_sica_catalogo_clasificacion_actividades_id_clasificacion_actividad_seq'),
+    nombre                     varchar(100),
+    descripcion                text,
+    baja                       boolean,
+    id_departamento            integer
+        references public.tb_sica_catalogo_departamentos,
+    fecha_creacion             timestamp default CURRENT_TIMESTAMP,
+    fecha_modificacion         timestamp default CURRENT_TIMESTAMP,
+    primary key (id_clasificacion_actividad)
+);
+
+alter table public.tb_sica_catalogo_clasificacion_actividades
+    owner to postgres;
+
+-- Crear tabla tb_sica_catalogo_grupo_actividades con secuencia personalizada
+DROP SEQUENCE IF EXISTS tb_sica_catalogo_grupo_actividades_id_grupo_actividad_seq;
+CREATE SEQUENCE tb_sica_catalogo_grupo_actividades_id_grupo_actividad_seq;
+create table if not exists public.tb_sica_catalogo_grupo_actividades
+(
+    id_grupo_actividad         integer NOT NULL DEFAULT nextval('tb_sica_catalogo_grupo_actividades_id_grupo_actividad_seq'),
+    nombre                     varchar(100),
+    descripcion                text,
+    baja                       boolean,
+    id_clasificacion_actividad integer
+        references public.tb_sica_catalogo_clasificacion_actividades,
+    fecha_creacion             timestamp default CURRENT_TIMESTAMP,
+    fecha_modificacion         timestamp default CURRENT_TIMESTAMP,
+    primary key (id_grupo_actividad)
+);
+
+alter table public.tb_sica_catalogo_grupo_actividades
+    owner to postgres;
+
+-- Crear tabla tb_sica_catalogo_actividades con secuencia personalizada
+DROP SEQUENCE IF EXISTS tb_sica_catalogo_actividades_id_actividad_seq;
+CREATE SEQUENCE tb_sica_catalogo_actividades_id_actividad_seq;
+create table if not exists public.tb_sica_catalogo_actividades
+(
+    id_actividad                 integer NOT NULL DEFAULT nextval('tb_sica_catalogo_actividades_id_actividad_seq'),
+    nombre                       varchar(150),
+    descripcion                  text,
+    tiempo                       numeric(18, 2),
+    baja                         boolean,
+    id_grupo_actividad           integer
+        references public.tb_sica_catalogo_grupo_actividades,
+    id_grupo_usuario_responsable integer
+        references public.tb_sica_grupo_usuarios_responsables,
+    fecha_creacion               timestamp default CURRENT_TIMESTAMP,
+    fecha_modificacion           timestamp default CURRENT_TIMESTAMP,
+    primary key (id_actividad)
+);
+
+alter table public.tb_sica_catalogo_actividades
+    owner to postgres;
+
+-- Crear tabla tb_sica_catalogo_estatus con secuencia personalizada
+DROP SEQUENCE IF EXISTS tb_sica_catalogo_estatus_id_estatus_seq;
+CREATE SEQUENCE tb_sica_catalogo_estatus_id_estatus_seq;
+create table if not exists public.tb_sica_catalogo_estatus
+(
+    id_estatus         integer NOT NULL DEFAULT nextval('tb_sica_catalogo_estatus_id_estatus_seq'),
+    descripcion        varchar(100),
+    clave              varchar(10),
+    fecha_creacion     timestamp default CURRENT_TIMESTAMP,
+    fecha_modificacion timestamp default CURRENT_TIMESTAMP,
+    primary key (id_estatus)
+);
+
+alter table public.tb_sica_catalogo_estatus
+    owner to postgres;
+
+-- Crear tabla tb_sica_catalogo_usuarios_sica con secuencia personalizada
+DROP SEQUENCE IF EXISTS tb_sica_catalogo_usuarios_sica_id_usuario_sica_seq;
+CREATE SEQUENCE tb_sica_catalogo_usuarios_sica_id_usuario_sica_seq;
+create table if not exists public.tb_sica_catalogo_usuarios_sica
+(
+    id_usuario_sica    integer NOT NULL DEFAULT nextval('tb_sica_catalogo_usuarios_sica_id_usuario_sica_seq'),
+    responsable        boolean,
+    jefe_area          boolean,
+    correo             varchar(150),
+    es_staff           boolean,
+    id_grupo_usuario   integer
+        references public.tb_sica_catalogo_grupos_usuarios,
+    id_usuario         integer
+        references public.tb_catalogo_usuarios,
+    id_departamento    integer
+        references public.tb_sica_catalogo_departamentos,
+    id_gerencia        integer
+        references public.tb_sica_catalogo_gerencias,
+    fecha_creacion     timestamp default CURRENT_TIMESTAMP,
+    fecha_modificacion timestamp default CURRENT_TIMESTAMP,
+    baja               boolean,
+    primary key (id_usuario_sica)
+);
+
+alter table public.tb_sica_catalogo_usuarios_sica
+    owner to postgres;
+
+-- Crear tabla tb_sica_atenciones con secuencia personalizada
+DROP SEQUENCE IF EXISTS tb_sica_atenciones_id_atencion_seq;
+CREATE SEQUENCE tb_sica_atenciones_id_atencion_seq;
+CREATE TABLE IF NOT EXISTS public.tb_sica_atenciones
+(
+    id_atencion                  bigint NOT NULL DEFAULT nextval('tb_sica_atenciones_id_atencion_seq'),
+    id_sucursal                  integer not null,
+    ticket                       varchar(14) unique,
+    asunto                       varchar(150),
+    usuario_reporta              integer
+        references public.tb_catalogo_usuarios,
+    fecha_inicio                 timestamp,
+    fecha_cierre                 timestamp,
+    usuario_cierre               integer
+        references public.tb_catalogo_usuarios,
+    fecha_cancelacion            timestamp,
+    usuario_cancelo              integer
+        references public.tb_catalogo_usuarios,
+    id_estatus                   integer
+        references public.tb_sica_catalogo_estatus,
+    id_actividad                 integer
+        references public.tb_sica_catalogo_actividades,
+    id_grupo_usuario_responsable integer
+        references public.tb_sica_grupo_usuarios_responsables,
+    id_departamento_actual       integer
+        references public.tb_sica_catalogo_departamentos,
+    id_departamento_anterior     integer
+        references public.tb_sica_catalogo_departamentos,
+    descripcion                  text,
+    fecha_modificacion           timestamp default CURRENT_TIMESTAMP,
+    fecha_creacion               timestamp default CURRENT_TIMESTAMP,
+    enviar_alerta                boolean,
+    fecha_inicio_ejecucion       timestamp default CURRENT_TIMESTAMP,
+    primary key (id_atencion, id_sucursal)
+);
+
+ALTER TABLE public.tb_sica_atenciones
+    OWNER TO postgres;
+
+-- Crear tabla tb_sica_mensajes con secuencia personalizada
+DROP SEQUENCE IF EXISTS tb_sica_mensajes_id_mensaje_seq;
+CREATE SEQUENCE tb_sica_mensajes_id_mensaje_seq;
+CREATE TABLE IF NOT EXISTS public.tb_sica_mensajes
+(
+    id_mensaje          bigint NOT NULL DEFAULT nextval('tb_sica_mensajes_id_mensaje_seq'),
+    id_atencion         bigint not null, 
+    id_sucursal         integer not null,
+    descripcion         text,
+    fecha_creacion      timestamp,
+    es_interno          boolean,
+    id_usuario_creacion integer
+        references public.tb_catalogo_usuarios,
+    primary key (id_mensaje, id_atencion, id_sucursal),
+    foreign key (id_atencion, id_sucursal) references public.tb_sica_atenciones(id_atencion, id_sucursal)
+);
+
+ALTER TABLE public.tb_sica_mensajes
+    OWNER TO postgres;
+
+-- Crear tabla tb_sica_transferencias_atenciones con secuencia personalizada
+DROP SEQUENCE IF EXISTS tb_sica_transferencias_atenciones_id_transferencia_seq;
+CREATE SEQUENCE tb_sica_transferencias_atenciones_id_transferencia_seq;
+CREATE TABLE IF NOT EXISTS public.tb_sica_transferencias_atenciones
+(
+    id_transferencia        bigint NOT NULL DEFAULT nextval('tb_sica_transferencias_atenciones_id_transferencia_seq'), -- Cambiado a BIGINT
+    id_atencion             bigint not null, 
+    id_sucursal             integer not null,
+    id_departamento_origen  integer
+        references public.tb_sica_catalogo_departamentos,
+    id_departamento_destino integer
+        references public.tb_sica_catalogo_departamentos,
+    fecha_transferencia     timestamp default CURRENT_TIMESTAMP,
+    usuario_transferencia   integer
+        references public.tb_catalogo_usuarios,
+    motivo                  text,
+    primary key (id_transferencia, id_atencion, id_sucursal),
+    foreign key (id_atencion, id_sucursal) references public.tb_sica_atenciones(id_atencion, id_sucursal)
+);
+
+ALTER TABLE public.tb_sica_transferencias_atenciones
+    OWNER TO postgres;
+
+-- Crear tabla tb_sica_seguimiento con secuencia personalizada
+DROP SEQUENCE IF EXISTS tb_sica_seguimiento_id_seguimiento_seq;
+CREATE SEQUENCE tb_sica_seguimiento_id_seguimiento_seq;
+CREATE TABLE IF NOT EXISTS public.tb_sica_seguimiento
+(
+    id_seguimiento integer NOT NULL DEFAULT nextval('tb_sica_seguimiento_id_seguimiento_seq'),
+    tabla_name varchar(100),
+    id_registro integer,
+    accion varchar(50),
+    usuario_id integer REFERENCES public.tb_catalogo_usuarios(id_usuario),
+    fecha timestamp DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id_seguimiento)
+);
+
+ALTER TABLE public.tb_sica_seguimiento
+    OWNER TO postgres;
+
+-- Crear tabla tb_sica_relacion_usuarios_grupo_responsables
+CREATE TABLE IF NOT EXISTS public.tb_sica_relacion_usuarios_grupo_responsables
+(
+    id_usuario                   integer not null
+        references public.tb_catalogo_usuarios,
+    id_grupo_usuario_responsable integer not null
+        references public.tb_sica_grupo_usuarios_responsables,
+    primary key (id_usuario, id_grupo_usuario_responsable)
+);
+
+ALTER TABLE public.tb_sica_relacion_usuarios_grupo_responsables
+    OWNER TO postgres;
+
+
+
+-- <================================================ funciones ================================================================= >
 DROP FUNCTION IF EXISTS public.fn_sica_atencion_generar_ticket();
 CREATE OR REPLACE FUNCTION public.fn_sica_atencion_generar_ticket() 
 RETURNS character varying
@@ -1776,7 +2076,6 @@ ALTER FUNCTION public.fn_sica_grupo_resp_asignar_usuario_insertar(integer, integ
 DROP FUNCTION IF EXISTS public.fn_sica_grupo_actividad_actualizar(
     integer, varchar, text, integer, boolean, integer
 );
-
 CREATE OR REPLACE FUNCTION public.fn_sica_grupo_actividad_actualizar(
     p_id_grupo_actividad integer,
     p_nombre character varying,
@@ -2014,7 +2313,6 @@ $$;
 ALTER FUNCTION public.fn_sica_jefes_responsables_por_departamento_obtener_consulta(integer) OWNER TO postgres;
 
 DROP FUNCTION IF EXISTS public.fn_sica_mensajes_obtener_por_atencion(bigint, integer);
-
 CREATE OR REPLACE FUNCTION public.fn_sica_mensajes_obtener_por_atencion(p_id_atencion bigint, p_id_sucursal integer)
 RETURNS TABLE(
     id_mensaje bigint,  -- Cambiado a BIGINT
@@ -2210,7 +2508,6 @@ ALTER FUNCTION public.fn_sica_usuario_obtener_por_usuario(varchar) OWNER TO post
 DROP FUNCTION IF EXISTS public.fn_sica_usuario_sica_actualizar(
     integer, boolean, boolean, varchar, boolean, integer, integer, integer, integer, boolean, integer
 );
-
 CREATE OR REPLACE FUNCTION public.fn_sica_usuario_sica_actualizar(
     p_id_usuario_sica integer,
     p_responsable boolean,
@@ -2340,7 +2637,6 @@ ALTER FUNCTION public.fn_sica_usuario_sica_detalle_obtener_consulta() OWNER TO p
 DROP FUNCTION IF EXISTS public.fn_sica_usuario_sica_insertar(
     boolean, boolean, varchar, boolean, integer, integer, integer, integer, integer, boolean
 );
-
 CREATE OR REPLACE FUNCTION public.fn_sica_usuario_sica_insertar(
     p_responsable boolean,
     p_jefe_area boolean,
@@ -2480,7 +2776,6 @@ $$;
 ALTER FUNCTION public.fn_sica_usuario_sica_obtener_todos_consulta() OWNER TO postgres;
 
 DROP FUNCTION IF EXISTS public.sica_mensajes_obtener_por_id_atencion(bigint);
-
 CREATE OR REPLACE FUNCTION public.sica_mensajes_obtener_por_id_atencion(p_id_atencion bigint) -- Cambiado a BIGINT
 RETURNS TABLE(
     descripcion_departamento character varying, 
@@ -2609,7 +2904,6 @@ $$;
 ALTER FUNCTION public.fn_sica_actividades_obtener_todas_consulta() OWNER TO postgres;
 
 DROP FUNCTION IF EXISTS public.fn_sica_mensaje_agregar(text, boolean, bigint, integer);
-
 CREATE OR REPLACE FUNCTION public.fn_sica_mensaje_agregar(
     p_descripcion text, 
     p_es_interno boolean, 
@@ -2755,7 +3049,6 @@ ALTER FUNCTION public.fn_sica_actividad_insertar(varchar, text, numeric, boolean
 
 
 DROP FUNCTION IF EXISTS public.fn_sica_atenciones_obtener_detalladas_por_usuario(integer);
-
 CREATE OR REPLACE FUNCTION public.fn_sica_atenciones_obtener_detalladas_por_usuario(p_id_usuario integer)
 RETURNS TABLE(
     id_atencion bigint,  -- Cambiado a BIGINT
@@ -2844,9 +3137,6 @@ END;
 $$;
 
 ALTER FUNCTION public.fn_sica_atenciones_obtener_por_creador(integer) OWNER TO postgres;
-
-
-
 
 
 DROP FUNCTION IF EXISTS public.fn_sica_insertar_mensaje(text, boolean, bigint, integer);
@@ -3071,8 +3361,6 @@ $BODY$;
 ALTER FUNCTION public.fn_sica_atencion_leido(bigint, integer)
     OWNER TO postgres;
 
-
-
 DROP FUNCTION IF EXISTS public.fn_sica_atencion_en_ejecucion(bigint, integer);
 
 CREATE OR REPLACE FUNCTION public.fn_sica_atencion_en_ejecucion(
@@ -3146,7 +3434,7 @@ ALTER FUNCTION public.fn_sica_atencion_en_ejecucion(bigint, integer)
 DROP FUNCTION IF EXISTS public.fn_sica_atencion_cerrar(bigint, integer, integer);
 
 CREATE OR REPLACE FUNCTION public.fn_sica_atencion_cerrar(
-    p_id_atencion BIGINT,  -- Cambiado a BIGINT
+    p_id_atencion BIGINT,  
     p_id_sucursal INTEGER,
     p_id_usuario_cierre INTEGER
 )
@@ -3678,6 +3966,35 @@ $BODY$;
 ALTER FUNCTION public.fn_sica_atenciones_filtrar_por_grupo_usuario(integer, integer, integer, integer, timestamp without time zone, timestamp without time zone, character varying)
     OWNER TO postgres;
 
+ DROP FUNCTION IF EXISTS public.fn_sica_atenciones_contar_con_alerta_por_usuario(integer);
+
+CREATE OR REPLACE FUNCTION public.fn_sica_atenciones_contar_con_alerta_por_usuario(
+	p_id_usuario integer)
+    RETURNS integer
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+DECLARE
+    alerta_count integer;
+BEGIN
+    SELECT COUNT(*)
+    INTO alerta_count
+    FROM 
+        public.tb_sica_atenciones a
+        JOIN public.tb_sica_relacion_usuarios_grupo_responsables ugr ON a.id_grupo_usuario_responsable = ugr.id_grupo_usuario_responsable
+        JOIN public.tb_catalogo_usuarios u ON ugr.id_usuario = u.id_usuario
+    WHERE
+        u.id_usuario = p_id_usuario
+        AND a.enviar_alerta = TRUE  -- Filtro para obtener solo las atenciones con alerta activa
+        AND a.id_estatus IN (1, 2, 3);  -- Filtrar por los estados específicos
+
+    RETURN alerta_count;
+END;
+$BODY$;
+
+ALTER FUNCTION public.fn_sica_atenciones_contar_con_alerta_por_usuario(integer)
+    OWNER TO postgres;
 
 
 
@@ -3715,10 +4032,6 @@ FROM
 
 ALTER TABLE public.sica_vw_atencion_detalles
     OWNER TO postgres;
-
-
-
-
 
 DROP VIEW IF EXISTS public.sica_vw_atenciones_usuario;
 
@@ -3775,46 +4088,10 @@ JOIN public.tb_catalogo_usuarios u ON ugr.id_usuario = u.id_usuario;
 ALTER TABLE public.sica_vw_atenciones_usuario_detalladas OWNER TO postgres;
 
 
-
-
-
-
-
-
-
 -- 12/09/2024
 
 -- FUNCTION: public.fn_sica_atenciones_contar_con_alerta_por_usuario(integer)
 
- DROP FUNCTION IF EXISTS public.fn_sica_atenciones_contar_con_alerta_por_usuario(integer);
-
-CREATE OR REPLACE FUNCTION public.fn_sica_atenciones_contar_con_alerta_por_usuario(
-	p_id_usuario integer)
-    RETURNS integer
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE PARALLEL UNSAFE
-AS $BODY$
-DECLARE
-    alerta_count integer;
-BEGIN
-    SELECT COUNT(*)
-    INTO alerta_count
-    FROM 
-        public.tb_sica_atenciones a
-        JOIN public.tb_sica_relacion_usuarios_grupo_responsables ugr ON a.id_grupo_usuario_responsable = ugr.id_grupo_usuario_responsable
-        JOIN public.tb_catalogo_usuarios u ON ugr.id_usuario = u.id_usuario
-    WHERE
-        u.id_usuario = p_id_usuario
-        AND a.enviar_alerta = TRUE  -- Filtro para obtener solo las atenciones con alerta activa
-        AND a.id_estatus IN (1, 2, 3);  -- Filtrar por los estados específicos
-
-    RETURN alerta_count;
-END;
-$BODY$;
-
-ALTER FUNCTION public.fn_sica_atenciones_contar_con_alerta_por_usuario(integer)
-    OWNER TO postgres;
 
 
 

@@ -232,7 +232,7 @@ CREATE SEQUENCE tb_sica_mensajes_id_mensaje_seq;
 CREATE TABLE IF NOT EXISTS public.tb_sica_mensajes
 (
     id_mensaje          bigint NOT NULL DEFAULT nextval('tb_sica_mensajes_id_mensaje_seq'),
-    id_atencion         bigint not null, -- Cambiado a BIGINT
+    id_atencion         bigint not null, 
     id_sucursal         integer not null,
     descripcion         text,
     fecha_creacion      timestamp,
@@ -298,30 +298,3 @@ CREATE TABLE IF NOT EXISTS public.tb_sica_relacion_usuarios_grupo_responsables
 
 ALTER TABLE public.tb_sica_relacion_usuarios_grupo_responsables
     OWNER TO postgres;
-
-
-
-
-
-{
-  "asunto": "prueba de insercion sica",
-  "ticket": "24093001388111",
-  "id_estatus": 2,
-  "descripcion": "prueba de insercion sica",
-  "id_atencion": 1,
-  "id_sucursal": 17,
-  "fecha_cierre": null,
-  "fecha_inicio": "2024-09-30T13:38:54.663583",
-  "id_actividad": 19,
-  "enviar_alerta": false,
-  "fecha_creacion": "2024-09-30T13:38:54.663583",
-  "usuario_cierre": null,
-  "usuario_cancelo": null,
-  "usuario_reporta": 3238,
-  "fecha_cancelacion": null,
-  "fecha_modificacion": "2024-09-30T13:43:54.719029",
-  "fecha_inicio_ejecucion": "2024-09-30T13:38:54.663583",
-  "id_departamento_actual": 3,
-  "id_departamento_anterior": null,
-  "id_grupo_usuario_responsable": 3
-}
