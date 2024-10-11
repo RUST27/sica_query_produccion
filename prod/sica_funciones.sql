@@ -537,14 +537,13 @@ ALTER FUNCTION public.fn_sica_atencion_actualizar_estatus(bigint, integer, integ
 DROP FUNCTION IF EXISTS public.fn_sica_atencion_cerrar(bigint, integer, integer);
 
 CREATE OR REPLACE FUNCTION public.fn_sica_atencion_cerrar(
-    p_id_atencion BIGINT, -- Cambiado a BIGINT
-    p_id_sucursal INTEGER,
-    p_id_usuario_cierre INTEGER
-)
-RETURNS VOID
-LANGUAGE 'plpgsql'
-COST 100
-VOLATILE PARALLEL UNSAFE
+	p_id_atencion bigint,
+	p_id_sucursal integer,
+	p_id_usuario_cierre integer)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
 AS $BODY$
 DECLARE
     _json jsonb;
@@ -556,9 +555,9 @@ BEGIN
         WHERE id_atencion = p_id_atencion
         AND id_sucursal = p_id_sucursal
     ) THEN
-        -- Actualizar el estatus de la atención a '5' (Cerrado)
+        -- Actualizar el estatus de la atención a '6' (Cerrado)
         UPDATE public.tb_sica_atenciones
-        SET id_estatus = 5,
+        SET id_estatus = 6,
             usuario_cierre = p_id_usuario_cierre,
             fecha_cierre = CURRENT_TIMESTAMP,
             fecha_modificacion = CURRENT_TIMESTAMP
@@ -586,13 +585,12 @@ BEGIN
         WHERE t.id_atencion = p_id_atencion
         AND t.id_sucursal = p_id_sucursal;
 
-        -- Llamar a la función de consolidación para enviar el registro actualizado a una sucursal específica
-        PERFORM public.fn_consolidador_registrarmovimiento_para_sucursalx(
+        -- Llamar a la función de consolidación para enviar el registro actualizado a oficinas
+        PERFORM public.fn_consolidador_registrarmovimiento_para_oficinas(
             _json,
             'u', -- 'u' indica que es una actualización
             'tb_sica_atenciones',
-            p_id_sucursal, -- Sucursal destino para enviar el registro
-            NULL           -- Tags, en este caso no estamos usando tags, pero se puede cambiar según necesidad
+            NULL  -- Tags opcionales, puedes cambiar esto según sea necesario
         );
     ELSE
         -- Si la atención no existe, se lanza un error
@@ -605,9 +603,9 @@ EXCEPTION
 END;
 $BODY$;
 
--- Cambiar el propietario de la función
 ALTER FUNCTION public.fn_sica_atencion_cerrar(bigint, integer, integer)
     OWNER TO postgres;
+
 
 
 
@@ -3427,82 +3425,6 @@ END;
 $BODY$;
 
 ALTER FUNCTION public.fn_sica_atencion_en_ejecucion(bigint, integer)
-    OWNER TO postgres;
-
-
-
-DROP FUNCTION IF EXISTS public.fn_sica_atencion_cerrar(bigint, integer, integer);
-
-CREATE OR REPLACE FUNCTION public.fn_sica_atencion_cerrar(
-    p_id_atencion BIGINT,  
-    p_id_sucursal INTEGER,
-    p_id_usuario_cierre INTEGER
-)
-RETURNS VOID
-LANGUAGE 'plpgsql'
-COST 100
-VOLATILE PARALLEL UNSAFE
-AS $BODY$
-DECLARE
-    _json jsonb;
-BEGIN
-    -- Verificar si la atención existe
-    IF EXISTS (
-        SELECT 1
-        FROM public.tb_sica_atenciones
-        WHERE id_atencion = p_id_atencion
-        AND id_sucursal = p_id_sucursal
-    ) THEN
-        -- Actualizar el estatus de la atención a '5' (Cerrado)
-        UPDATE public.tb_sica_atenciones
-        SET id_estatus = 5,
-            usuario_cierre = p_id_usuario_cierre,
-            fecha_cierre = CURRENT_TIMESTAMP,
-            fecha_modificacion = CURRENT_TIMESTAMP
-        WHERE id_atencion = p_id_atencion
-        AND id_sucursal = p_id_sucursal;
-
-        -- Registrar la operación en la tabla de seguimiento
-        INSERT INTO public.tb_sica_seguimiento (
-            tabla_name, 
-            id_registro, 
-            accion, 
-            usuario_id, 
-            fecha
-        ) VALUES (
-            'tb_sica_atenciones', 
-            p_id_atencion,  -- Cambiado a BIGINT
-            'CLOSE', 
-            p_id_usuario_cierre, 
-            CURRENT_TIMESTAMP
-        );
-
-        -- Generar el JSONB del registro actualizado para consolidación
-        SELECT to_jsonb(t) INTO _json
-        FROM public.tb_sica_atenciones t
-        WHERE t.id_atencion = p_id_atencion
-        AND t.id_sucursal = p_id_sucursal;
-
-        -- Llamar a la función de consolidación específica para sucursal
-        PERFORM public.fn_consolidador_registrarmovimiento_para_sucursalx(
-            _json,
-            'u', -- 'u' indica que es una actualización
-            'tb_sica_atenciones',
-            p_id_sucursal,
-            NULL
-        );
-    ELSE
-        -- Si la atención no existe, se lanza un error
-        RAISE EXCEPTION 'Atención con id % y sucursal % no encontrada.', p_id_atencion, p_id_sucursal;
-    END IF;
-
-EXCEPTION
-    WHEN OTHERS THEN
-        RAISE EXCEPTION 'Error al cerrar la atención: %', SQLERRM;
-END;
-$BODY$;
-
-ALTER FUNCTION public.fn_sica_atencion_cerrar(bigint, integer, integer)
     OWNER TO postgres;
 
 
