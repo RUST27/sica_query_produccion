@@ -2801,7 +2801,7 @@ AS
 $$
 BEGIN
     RETURN QUERY
-    SELECT 
+    SELECT DISTINCT 
         dep.descripcion AS descripcion_departamento,
         msg.id_atencion,
         msg.id_mensaje,
@@ -2818,6 +2818,7 @@ BEGIN
         AND msg.id_sucursal = p_id_sucursal;  -- Condición agregada para filtrar por sucursal
 END;
 $$;
+
 
 -- Cambiar el propietario de la función
 ALTER FUNCTION public.sica_mensajes_obtener_por_id_atencion(bigint, integer) OWNER TO postgres;

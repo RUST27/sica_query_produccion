@@ -302,3 +302,58 @@ SELECT fn_sica_catalogo_grupos_usuarios_insertar(
     FALSE               -- baja
 );
 
+
+
+-- Insertar 'Operaciones'
+SELECT fn_sica_catalogo_gerencias_insertar(
+    'Operaciones',  -- descripcion
+    FALSE           -- baja
+);
+
+-- Insertar 'Abastos'
+SELECT fn_sica_catalogo_gerencias_insertar(
+    'Abastos',      -- descripcion
+    FALSE           -- baja
+);
+
+-- Insertar 'Mercadotecnia'
+SELECT fn_sica_catalogo_gerencias_insertar(
+    'Mercadotecnia',  -- descripcion
+    FALSE             -- baja
+);
+
+-- Insertar 'Recursos Humanos'
+SELECT fn_sica_catalogo_gerencias_insertar(
+    'Recursos Humanos',  -- descripcion
+    FALSE                -- baja
+);
+
+-- Insertar 'Sistemas'
+SELECT fn_sica_catalogo_gerencias_insertar(
+    'Sistemas',  -- descripcion
+    FALSE        -- baja
+);
+
+-- Insertar 'Compras'
+SELECT fn_sica_catalogo_gerencias_insertar(
+    'Compras',  -- descripcion
+    FALSE       -- baja
+);
+
+-- Insertar 'Auditoria'
+SELECT fn_sica_catalogo_gerencias_insertar(
+    'Auditoria',  -- descripcion
+    FALSE         -- baja
+);
+
+-- Insertar 'Contabilidad'
+SELECT fn_sica_catalogo_gerencias_insertar(
+    'Contabilidad',  -- descripcion
+    FALSE            -- baja
+);
+
+-- Insertar 'Gerencia General'
+SELECT fn_sica_catalogo_gerencias_insertar(
+    'Gerencia General',  -- descripcion
+    FALSE                -- baja
+);
