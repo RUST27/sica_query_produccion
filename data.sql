@@ -27,8 +27,8 @@ VALUES
     ('Leído', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     ('Ejecución', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     ('Observaciones', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Cerrado', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Cancelado', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    ('Cancelado', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Cerrado', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO public.tb_sica_catalogo_grupos_usuarios (descripcion, fecha_creacion, fecha_modificacion, baja)
 VALUES

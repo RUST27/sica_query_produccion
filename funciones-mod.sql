@@ -213,3 +213,92 @@ $$;
 ALTER FUNCTION public.fn_sica_grupo_responsable_obtener_todos() OWNER TO postgres;
 
 SELECT * FROM public.tb_sica_catalogo_departamentos;
+
+
+
+DROP TABLE IF EXISTS public.tb_sica_grupo_usuarios_responsables CASCADE;
+DROP TABLE IF EXISTS public.tb_sica_relacion_usuarios_grupo_responsables CASCADE;
+
+DROP SEQUENCE IF EXISTS tb_sica_grupo_usuarios_responsables_id_grupo_usuario_responsable_seq;
+DROP SEQUENCE IF EXISTS tb_sica_grupo_usuarios_responsables_seq;    
+create table if not exists public.tb_sica_grupo_usuarios_responsables
+(
+    id_grupo_usuario_responsable SERIAL NOT NULL,
+    nombre                       varchar(100),
+    descripcion                  text,
+    id_departamento              integer
+        references public.tb_sica_catalogo_departamentos,
+    fecha_creacion               timestamp default CURRENT_TIMESTAMP,
+    fecha_modificacion           timestamp default CURRENT_TIMESTAMP,
+    baja                         boolean,
+    primary key (id_grupo_usuario_responsable)
+);
+
+alter table public.tb_sica_grupo_usuarios_responsables
+    owner to postgres;
+
+-- estatus
+
+-- Insertar 'Nuevo'
+SELECT public.fn_sica_catalogo_estatus_insertar(
+    'Nuevo',    -- descripcion
+    'NVO'        -- clave
+);
+
+-- Insertar 'Leído'
+SELECT fn_sica_catalogo_estatus_insertar(
+    'Leído',    -- descripcion
+    'LDO'        -- clave
+);
+
+-- Insertar 'Ejecución'
+SELECT fn_sica_catalogo_estatus_insertar(
+    'Ejecución',    -- descripcion
+    'EJEC'            -- clave
+);
+
+-- Insertar 'Observaciones'
+SELECT fn_sica_catalogo_estatus_insertar(
+    'Observaciones',    -- descripcion
+    'OBS'                -- clave
+);
+
+-- Insertar 'Cancelado'
+SELECT fn_sica_catalogo_estatus_insertar(
+    'Cancelado',    -- descripcion
+    'CANC'            -- clave
+);
+
+-- Insertar 'Cerrado'
+SELECT fn_sica_catalogo_estatus_insertar(
+    'Cerrado',    -- descripcion
+    'CRDO'          -- clave
+);
+
+
+-- insertar grupos usuarios
+
+-- Insertar 'Administradores'
+SELECT fn_sica_catalogo_grupos_usuarios_insertar(
+    'Administradores',  -- descripcion
+    FALSE               -- baja
+);
+
+-- Insertar 'Usuarios'
+SELECT fn_sica_catalogo_grupos_usuarios_insertar(
+    'Usuarios',         -- descripcion
+    FALSE               -- baja
+);
+
+-- Insertar 'Recepción'
+SELECT fn_sica_catalogo_grupos_usuarios_insertar(
+    'Recepción',        -- descripcion
+    FALSE               -- baja
+);
+
+-- Insertar 'Gerencias'
+SELECT fn_sica_catalogo_grupos_usuarios_insertar(
+    'Gerencias',        -- descripcion
+    FALSE               -- baja
+);
+
