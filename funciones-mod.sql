@@ -302,7 +302,7 @@ SELECT fn_sica_catalogo_grupos_usuarios_insertar(
     FALSE               -- baja
 );
 
-
+-- catalogo gerencias 
 
 -- Insertar 'Operaciones'
 SELECT fn_sica_catalogo_gerencias_insertar(
@@ -356,4 +356,836 @@ SELECT fn_sica_catalogo_gerencias_insertar(
 SELECT fn_sica_catalogo_gerencias_insertar(
     'Gerencia General',  -- descripcion
     FALSE                -- baja
+);
+
+-- catalogo de departamentos
+
+-- Insertar 'RECURSOS HUMANOS' en la gerencia con ID 4
+SELECT public.fn_sica_departamento_insertar('RECURSOS HUMANOS', 4, false, 1);
+
+-- Insertar 'OPERACIONES' en la gerencia con ID 1
+SELECT public.fn_sica_departamento_insertar('OPERACIONES', 1, false, 1);
+
+-- Insertar 'SISTEMAS' en la gerencia con ID 5
+SELECT public.fn_sica_departamento_insertar('SISTEMAS', 5, false, 1);
+
+-- Insertar 'COMPRAS' en la gerencia con ID 1 (estado de baja true)
+SELECT public.fn_sica_departamento_insertar('COMPRAS', 1, true, 1);
+
+-- Insertar 'Logistica' en la gerencia con ID 2
+SELECT public.fn_sica_departamento_insertar('Logistica', 2, false, 1);
+
+-- Insertar 'Mercadotecnia' en la gerencia con ID 3
+SELECT public.fn_sica_departamento_insertar('Mercadotecnia', 3, false, 1);
+
+-- Insertar 'Compras' en la gerencia con ID 6
+SELECT public.fn_sica_departamento_insertar('Compras', 6, false, 1);
+
+-- Insertar 'AUDITORIA' en la gerencia con ID 7
+SELECT public.fn_sica_departamento_insertar('AUDITORIA', 7, false, 1);
+
+-- Insertar 'Contabilidad y Finanzas' en la gerencia con ID 8
+SELECT public.fn_sica_departamento_insertar('Contabilidad y Finanzas', 8, false, 1);
+
+-- Insertar 'Gerencia General' en la gerencia con ID 9
+SELECT public.fn_sica_departamento_insertar('Gerencia General', 9, false, 1);
+
+-- catalogo clasificacion actividades
+
+-- Insertar 'RECLUTAMIENTO' en la clasificación de actividades para el departamento con ID 1
+SELECT public.fn_sica_clasificacion_actividad_insertar('RECLUTAMIENTO', 'RECLUTAMIENTO', 1, false, 1);
+
+-- Insertar 'HERRAMIENTAS' en la clasificación de actividades para el departamento con ID 1
+SELECT public.fn_sica_clasificacion_actividad_insertar('HERRAMIENTAS', 'HERRAMIENTAS', 1, false, 1);
+
+-- Insertar 'REQUERIMIENTO' en la clasificación de actividades para el departamento con ID 1
+SELECT public.fn_sica_clasificacion_actividad_insertar('REQUERIMIENTO', 'REQUERIMIENTO', 1, false, 1);
+
+-- Insertar 'MENTENIMIENTO FIO' en la clasificación de actividades para el departamento con ID 2
+SELECT public.fn_sica_clasificacion_actividad_insertar('MENTENIMIENTO FIO', 'MENTENIMIENTO FIO', 2, false, 1);
+
+-- Insertar 'MANTENIMIENTOS TIENDA' en la clasificación de actividades para el departamento con ID 2
+SELECT public.fn_sica_clasificacion_actividad_insertar('MANTENIMIENTOS TIENDA', 'MANTENIMIENTOS TIENDA', 2, false, 1);
+
+-- Insertar 'EQUIPOS' en la clasificación de actividades para el departamento con ID 3
+SELECT public.fn_sica_clasificacion_actividad_insertar('EQUIPOS', 'EQUIPOS', 3, false, 1);
+
+-- Insertar 'SISTEMA' en la clasificación de actividades para el departamento con ID 3
+SELECT public.fn_sica_clasificacion_actividad_insertar('SISTEMA', 'FALLA DEL SISTEMA', 3, false, 1);
+
+-- Insertar 'COMPRAS' en la clasificación de actividades para el departamento con ID 7
+SELECT public.fn_sica_clasificacion_actividad_insertar('COMPRAS', 'COMPRAS', 7, false, 1);
+
+-- Insertar 'PLANOGRAMAS' en la clasificación de actividades para el departamento con ID 6
+SELECT public.fn_sica_clasificacion_actividad_insertar('PLANOGRAMAS', 'PLANOGRAMAS', 6, false, 1);
+
+-- Insertar 'MATERIAL POP' en la clasificación de actividades para el departamento con ID 6
+SELECT public.fn_sica_clasificacion_actividad_insertar('MATERIAL POP', 'MATERIAL POP', 6, false, 1);
+
+-- Insertar 'PROMOCIONES' en la clasificación de actividades para el departamento con ID 6
+SELECT public.fn_sica_clasificacion_actividad_insertar('PROMOCIONES', 'PROMOCIONES', 6, false, 1);
+
+-- Insertar 'CONTABILIDAD' en la clasificación de actividades para el departamento con ID 9
+SELECT public.fn_sica_clasificacion_actividad_insertar('CONTABILIDAD', 'CONTABILIDAD', 9, false, 1);
+
+-- Insertar 'AUDITORIA' en la clasificación de actividades para el departamento con ID 8
+SELECT public.fn_sica_clasificacion_actividad_insertar('AUDITORIA', 'AUDITORIA', 8, false, 1);
+
+-- catalogo grupo actividades
+
+-- Insertar 'RECLUTAMIENTO' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('RECLUTAMIENTO', 'RECLUTAMIENTO', 1, false, 1);
+
+-- Insertar 'HERRAMIENTAS' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('HERRAMIENTAS', 'HERRAMIENTAS', 2, false, 1);
+
+-- Insertar 'REQUERIMIENTO' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('REQUERIMIENTO', 'REQUERIMIENTO', 3, false, 1);
+
+-- Insertar 'MENTENIMIENTO FIO' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('MENTENIMIENTO FIO', 'MENTENIMIENTO FIO', 4, false, 1);
+
+-- Insertar 'MANTENIMIENTOS TIENDA' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('MANTENIMIENTOS TIENDA', 'MANTENIMIENTOS TIENDA', 5, false, 1);
+
+-- Insertar 'FALLAS' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('FALLAS', 'FALLAS', 6, false, 1);
+
+-- Insertar 'REPARACION' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('REPARACION', 'REPARACION', 6, false, 1);
+
+-- Insertar 'FALLA DEL SISTEMA' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('FALLA DEL SISTEMA', 'FALLA DEL SISTEMA', 7, false, 1);
+
+-- Insertar 'PROVEEDORES' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('PROVEEDORES', 'PROVEEDORES', 8, false, 1);
+
+-- Insertar 'NUEVA CATALOGACIÓN' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('NUEVA CATALOGACIÓN', 'Nueva Catalogación', 9, false, 1);
+
+-- Insertar 'PRODUCTO DESCATALOGADO' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('PRODUCTO DESCATALOGADO', 'Producto descatalogado', 9, false, 1);
+
+-- Insertar 'GONDOLA' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('GONDOLA', 'GONDOLA', 9, false, 1);
+
+-- Insertar 'CORTINA DE AIRE' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('CORTINA DE AIRE', 'CORTINA DE AIRE', 9, false, 1);
+
+-- Insertar 'FAST FOOD' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('FAST FOOD', 'FAST FOOD', 9, false, 1);
+
+-- Insertar 'CAMARA FRÍA' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('CAMARA FRÍA', 'CAMARA FRÍA', 9, false, 1);
+
+-- Insertar 'VITRINA' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('VITRINA', 'VITRINA', 9, false, 1);
+
+-- Insertar 'Señaletica' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('Señaletica', 'Señaletica', 10, false, 1);
+
+-- Insertar 'Señaletica Fast Food' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('Señaletica Fast Food', 'Señaletica Fast Food', 10, false, 1);
+
+-- Insertar 'PROMOCIONES MENSUALES' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('PROMOCIONES MENSUALES', 'PROMOCIONES MENSUALES', 11, false, 1);
+
+-- Insertar 'CADUCIDAD' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('CADUCIDAD', 'CADUCIDAD', 8, false, 1);
+
+-- Insertar 'PROMOCIONES' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('PROMOCIONES', 'PROMOCIONES', 8, false, 1);
+
+-- Insertar 'PRODUCTOS' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('PRODUCTOS', 'PRODUCTOS', 8, false, 1);
+
+-- Insertar 'BANCO' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('BANCO', 'BANCO', 12, false, 1);
+
+-- Insertar 'FACTURACION' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('FACTURACION', 'FACTURACION', 12, false, 1);
+
+-- Insertar 'GENERAL' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('GENERAL', 'GENERAL', 12, false, 1);
+
+-- Insertar 'AUDITORIA' en el grupo de actividades
+SELECT public.fn_sica_grupo_actividad_insertar('AUDITORIA', 'AUDITORIA', 13, false, 1);
+
+-- catalogo grupos usuarios  responsables
+
+-- Insertar 'Grupo de Gestión de Recursos Humanos' en el departamento con ID 1
+SELECT public.fn_sica_grupo_usuario_responsables_insertar(
+    'Grupo de Gestión de Recursos Humanos', 
+    'Grupo responsable de la gestión y administración de los recursos humanos.', 
+    1, 
+    false, 
+    1
+);
+
+-- Insertar 'Grupo de Operaciones y Logística' en el departamento con ID 2
+SELECT public.fn_sica_grupo_usuario_responsables_insertar(
+    'Grupo de Operaciones y Logística', 
+    'Grupo encargado de la supervisión y control de operaciones diarias y logística.', 
+    2, 
+    false, 
+    1
+);
+
+-- Insertar 'Grupo Soporte de Sistemas' en el departamento con ID 3
+SELECT public.fn_sica_grupo_usuario_responsables_insertar(
+    'Grupo Soporte de Sistemas', 
+    'Grupo encargado del mantenimiento, desarrollo y soporte de los sistemas informáticos.', 
+    3, 
+    false, 
+    1
+);
+
+-- Insertar 'Grupo Logística' en el departamento con ID 5
+SELECT public.fn_sica_grupo_usuario_responsables_insertar(
+    'Grupo Logística', 
+    'Grupo responsable de la planificación y ejecución de la logística y distribución.', 
+    5, 
+    false, 
+    1
+);
+
+-- Insertar 'Grupo Mercadotecnia' en el departamento con ID 6
+SELECT public.fn_sica_grupo_usuario_responsables_insertar(
+    'Grupo Mercadotecnia', 
+    'Grupo encargado de desarrollar e implementar estrategias de marketing.', 
+    6, 
+    false, 
+    1
+);
+
+-- Insertar 'Grupo de Compras' en el departamento con ID 7
+SELECT public.fn_sica_grupo_usuario_responsables_insertar(
+    'Grupo de Compras', 
+    'Grupo responsable de la gestión de compras.', 
+    7, 
+    false, 
+    1
+);
+
+-- Insertar 'Grupo de Auditoría' en el departamento con ID 8
+SELECT public.fn_sica_grupo_usuario_responsables_insertar(
+    'Grupo de Auditoría', 
+    'Grupo encargado de la auditoría interna y el control de riesgos.', 
+    8, 
+    false, 
+    1
+);
+
+-- Insertar 'Grupo de Contabilidad y Finanzas' en el departamento con ID 9
+SELECT public.fn_sica_grupo_usuario_responsables_insertar(
+    'Grupo de Contabilidad y Finanzas', 
+    'Grupo responsable de la gestión financiera y contable de la organización.', 
+    9, 
+    false, 
+    1
+);
+
+-- Insertar 'Grupo de Gestión de la Gerencia General' en el departamento con ID 10
+SELECT public.fn_sica_grupo_usuario_responsables_insertar(
+    'Grupo de Gestión de la Gerencia General', 
+    'Grupo encargado de la coordinación y administración de la Gerencia General.', 
+    10, 
+    false, 
+    1
+);
+
+-- catalogo de actividades
+
+-- Insertar 'OPER'
+SELECT public.fn_sica_actividad_insertar(
+    'OPER', 
+    'OPER', 
+    190.00, 
+    false, 
+    1, 
+    1, 
+    1
+);
+
+-- Insertar 'STAFF'
+SELECT public.fn_sica_actividad_insertar(
+    'STAFF', 
+    'STAFF', 
+    360.00, 
+    false, 
+    1, 
+    1, 
+    1
+);
+
+-- Insertar 'GAFETES'
+SELECT public.fn_sica_actividad_insertar(
+    'GAFETES', 
+    'GAFETES', 
+    24.00, 
+    false, 
+    2, 
+    1, 
+    1
+);
+
+-- Insertar 'CASACAS'
+SELECT public.fn_sica_actividad_insertar(
+    'CASACAS', 
+    'CASACAS', 
+    24.00, 
+    false, 
+    2, 
+    1, 
+    1
+);
+
+-- Insertar 'FAJAS'
+SELECT public.fn_sica_actividad_insertar(
+    'FAJAS', 
+    'FAJAS', 
+    24.00, 
+    false, 
+    2, 
+    1, 
+    1
+);
+
+-- Insertar 'CONSTACIA'
+SELECT public.fn_sica_actividad_insertar(
+    'CONSTACIA', 
+    'CONSTACIA', 
+    24.00, 
+    false, 
+    3, 
+    1, 
+    1
+);
+
+-- Insertar 'DESCUENTOS (INVENTARIO/CAJA)'
+SELECT public.fn_sica_actividad_insertar(
+    'DESCUENTOS (INVENTARIO/CAJA)', 
+    'DESCUENTOS (INVENTARIO/CAJA)', 
+    72.00, 
+    false, 
+    3, 
+    1, 
+    1
+);
+
+-- Insertar 'DESCANSOS'
+SELECT public.fn_sica_actividad_insertar(
+    'DESCANSOS', 
+    'DESCANSOS', 
+    72.00, 
+    false, 
+    3, 
+    1, 
+    1
+);
+
+-- Insertar 'NOCTURNOS'
+SELECT public.fn_sica_actividad_insertar(
+    'NOCTURNOS', 
+    'NOCTURNOS', 
+    72.00, 
+    false, 
+    3, 
+    1, 
+    1
+);
+
+-- Insertar 'CAMARA FRIA NO ENFRIA'
+SELECT public.fn_sica_actividad_insertar(
+    'CAMARA FRIA NO ENFRIA', 
+    'CAMARA FRIA NO ENFRIA', 
+    48.00, 
+    false, 
+    4, 
+    2, 
+    1
+);
+
+-- Insertar 'CORTINA DE AIRE NO ENFRIA'
+SELECT public.fn_sica_actividad_insertar(
+    'CORTINA DE AIRE NO ENFRIA', 
+    'CORTINA DE AIRE NO ENFRIA', 
+    72.00, 
+    false, 
+    4, 
+    2, 
+    1
+);
+
+-- Insertar 'VITRINA NO ENFRIA'
+SELECT public.fn_sica_actividad_insertar(
+    'VITRINA NO ENFRIA', 
+    'VITRINA NO ENFRIA', 
+    96.00, 
+    false, 
+    4, 
+    2, 
+    1
+);
+
+-- Insertar 'ENFRIADOR NO ENFRIA'
+SELECT public.fn_sica_actividad_insertar(
+    'ENFRIADOR NO ENFRIA', 
+    'ENFRIADOR NO ENFRIA', 
+    48.00, 
+    false, 
+    4, 
+    2, 
+    1
+);
+
+-- Insertar 'PUERTA ACCESO A TIENDA ARRASTRA'
+SELECT public.fn_sica_actividad_insertar(
+    'PUERTA ACCESO A TIENDA ARRASTRA', 
+    'PUERTA ACCESO A TIENDA ARRASTRA', 
+    96.00, 
+    false, 
+    5, 
+    2, 
+    1
+);
+
+-- Insertar 'FUGA DE AGUA EN EL BAÑO'
+SELECT public.fn_sica_actividad_insertar(
+    'FUGA DE AGUA EN EL BAÑO', 
+    'FUGA DE AGUA EN EL BAÑO', 
+    48.00, 
+    false, 
+    5, 
+    2, 
+    1
+);
+
+-- Insertar 'FUGA DE AGUA EN LLAVE ESTACIONAMIENTO'
+SELECT public.fn_sica_actividad_insertar(
+    'FUGA DE AGUA EN LLAVE ESTACIONAMIENTO', 
+    'FUGA DE AGUA EN LLAVE ESTACIONAMIENTO', 
+    48.00, 
+    false, 
+    5, 
+    2, 
+    1
+);
+
+-- Insertar 'CRISTA ROTO DE SUCURSAL'
+SELECT public.fn_sica_actividad_insertar(
+    'CRISTA ROTO DE SUCURSAL', 
+    'CRISTA ROTO DE SUCURSAL', 
+    48.00, 
+    false, 
+    5, 
+    2, 
+    1
+);
+
+-- Insertar 'CAJA FUERTE DAÑADA'
+SELECT public.fn_sica_actividad_insertar(
+    'CAJA FUERTE DAÑADA', 
+    'CAJA FUERTE DAÑADA', 
+    48.00, 
+    false, 
+    5, 
+    2, 
+    1
+);
+
+-- Insertar 'CAJA 1'
+SELECT public.fn_sica_actividad_insertar(
+    'CAJA 1', 
+    'CAJA 1', 
+    6.00, 
+    false, 
+    6, 
+    3, 
+    1
+);
+
+-- Insertar 'CAJA 2'
+SELECT public.fn_sica_actividad_insertar(
+    'CAJA 2', 
+    'CAJA 2', 
+    6.00, 
+    false, 
+    6, 
+    3, 
+    1
+);
+
+-- Insertar 'RECARGAS/BANCO/TELEFONO'
+SELECT public.fn_sica_actividad_insertar(
+    'RECARGAS/BANCO/TELEFONO', 
+    'RECARGAS/BANCO/TELEFONO', 
+    72.00, 
+    false, 
+    6, 
+    3, 
+    1
+);
+
+-- Insertar 'CAMARA DE VIDEO'
+SELECT public.fn_sica_actividad_insertar(
+    'CAMARA DE VIDEO', 
+    'CAMARA DE VIDEO', 
+    24.00, 
+    false, 
+    6, 
+    3, 
+    1
+);
+
+-- Insertar 'FALLA DE EQUIPO'
+SELECT public.fn_sica_actividad_insertar(
+    'FALLA DE EQUIPO', 
+    'FALLA DE EQUIPO', 
+    168.00, 
+    false, 
+    6, 
+    3, 
+    1
+);
+
+-- Insertar 'ACCESORIOS'
+SELECT public.fn_sica_actividad_insertar(
+    'ACCESORIOS', 
+    'ACCESORIOS', 
+    24.00, 
+    false, 
+    7, 
+    3, 
+    1
+);
+
+-- Insertar 'FALLA EN EL SISTEMA'
+SELECT public.fn_sica_actividad_insertar(
+    'FALLA EN EL SISTEMA', 
+    'FALLA EN EL SISTEMA', 
+    24.00, 
+    false, 
+    8, 
+    3, 
+    1
+);
+
+-- Insertar 'PROVEEDORES'
+SELECT public.fn_sica_actividad_insertar(
+    'PROVEEDORES', 
+    'PROVEEDORES', 
+    144.00, 
+    false, 
+    9, 
+    6, 
+    1
+);
+
+-- Insertar 'ACOMODO DE PRODUCTO NUEVO'
+SELECT public.fn_sica_actividad_insertar(
+    'ACOMODO DE PRODUCTO NUEVO', 
+    'ACOMODO DE PRODUCTO NUEVO', 
+    24.00, 
+    false, 
+    10, 
+    5, 
+    1
+);
+
+-- Insertar 'SUSTITUIR FRENTE POR OTRO PRODUCTO'
+SELECT public.fn_sica_actividad_insertar(
+    'SUSTITUIR FRENTE POR OTRO PRODUCTO', 
+    'SUSTITUIR FRENTE POR OTRO PRODUCTO', 
+    24.00, 
+    false, 
+    11, 
+    5, 
+    1
+);
+
+-- Insertar 'GONDOLA PLANOGRAMAS ACTUALIZADOS'
+SELECT public.fn_sica_actividad_insertar(
+    'GONDOLA PLANOGRAMAS ACTUALIZADOS', 
+    'GONDOLA PLANOGRAMAS ACTUALIZADOS', 
+    24.00, 
+    false, 
+    12, 
+    5, 
+    1
+);
+
+-- Insertar 'CORTINA DE AIRE PLANOGRAMAS ACTUALIZADOS'
+SELECT public.fn_sica_actividad_insertar(
+    'CORTINA DE AIRE PLANOGRAMAS ACTUALIZADOS', 
+    'CORTINA DE AIRE PLANOGRAMAS ACTUALIZADOS', 
+    24.00, 
+    false, 
+    13, 
+    5, 
+    1
+);
+
+-- Insertar 'FAST FOOD PLANOGRAMAS ACTUALIZADOS'
+SELECT public.fn_sica_actividad_insertar(
+    'FAST FOOD PLANOGRAMAS ACTUALIZADOS', 
+    'FAST FOOD PLANOGRAMAS ACTUALIZADOS', 
+    24.00, 
+    false, 
+    14, 
+    5, 
+    1
+);
+
+-- Insertar 'CAMARA FRÍA PLANOGRAMAS ACTUALIZADOS'
+SELECT public.fn_sica_actividad_insertar(
+    'CAMARA FRÍA PLANOGRAMAS ACTUALIZADOS', 
+    'CAMARA FRÍA PLANOGRAMAS ACTUALIZADOS', 
+    24.00, 
+    false, 
+    15, 
+    5, 
+    1
+);
+
+-- Insertar 'VITRINA PLANOGRAMAS ACTUALIZADOS'
+SELECT public.fn_sica_actividad_insertar(
+    'VITRINA PLANOGRAMAS ACTUALIZADOS', 
+    'VITRINA PLANOGRAMAS ACTUALIZADOS', 
+    24.00, 
+    false, 
+    16, 
+    5, 
+    1
+);
+
+-- Insertar 'SEÑALIZACIÓN EN LAS SUCURSALES'
+SELECT public.fn_sica_actividad_insertar(
+    'SEÑALIZACIÓN EN LAS SUCURSALES', 
+    'SEÑALIZACIÓN EN LAS SUCURSALES', 
+    24.00, 
+    false, 
+    17, 
+    5, 
+    1
+);
+
+-- Insertar 'TIRAS PRECIADORAS'
+SELECT public.fn_sica_actividad_insertar(
+    'TIRAS PRECIADORAS', 
+    'TIRAS PRECIADORAS', 
+    24.00, 
+    false, 
+    18, 
+    5, 
+    1
+);
+
+-- Insertar 'MICROONDAS'
+SELECT public.fn_sica_actividad_insertar(
+    'MICROONDAS', 
+    'MICROONDAS', 
+    24.00, 
+    false, 
+    18, 
+    5, 
+    1
+);
+
+-- Insertar 'HOTDOG'
+SELECT public.fn_sica_actividad_insertar(
+    'HOTDOG', 
+    'HOTDOG', 
+    24.00, 
+    false, 
+    18, 
+    5, 
+    1
+);
+
+-- Insertar 'SIERRA BONITA'
+SELECT public.fn_sica_actividad_insertar(
+    'SIERRA BONITA', 
+    'SIERRA BONITA', 
+    24.00, 
+    false, 
+    18, 
+    5, 
+    1
+);
+
+-- Insertar 'VIGENCIA'
+SELECT public.fn_sica_actividad_insertar(
+    'VIGENCIA', 
+    'VIGENCIA', 
+    24.00, 
+    false, 
+    19, 
+    5, 
+    1
+);
+
+-- Insertar 'GUÍA DE EJECUCIÓN'
+SELECT public.fn_sica_actividad_insertar(
+    'GUÍA DE EJECUCIÓN', 
+    'GUÍA DE EJECUCIÓN', 
+    24.00, 
+    false, 
+    19, 
+    5, 
+    1
+);
+
+-- Insertar 'PRODUCTOS PROXIMOS A CADUCAR'
+SELECT public.fn_sica_actividad_insertar(
+    'PRODUCTOS PROXIMOS A CADUCAR', 
+    'PRODUCTOS PROXIMOS A CADUCAR', 
+    48.00, 
+    false, 
+    20, 
+    6, 
+    1
+);
+
+-- Insertar 'PRODUCTOS QUE NO PASAN'
+SELECT public.fn_sica_actividad_insertar(
+    'PRODUCTOS QUE NO PASAN', 
+    'PRODUCTOS QUE NO PASAN', 
+    12.00, 
+    false, 
+    22, 
+    6, 
+    1
+);
+
+-- Insertar 'DESBLOQUEO DE PRODUCTOS'
+SELECT public.fn_sica_actividad_insertar(
+    'DESBLOQUEO DE PRODUCTOS', 
+    'DESBLOQUEO DE PRODUCTOS', 
+    24.00, 
+    false, 
+    22, 
+    6, 
+    1
+);
+
+-- Insertar 'REFERENCIAS BANCO'
+SELECT public.fn_sica_actividad_insertar(
+    'REFERENCIAS BANCO', 
+    'REFERENCIAS BANCO', 
+    24.00, 
+    false, 
+    23, 
+    8, 
+    1
+);
+
+-- Insertar 'CASH'
+SELECT public.fn_sica_actividad_insertar(
+    'CASH', 
+    'CASH', 
+    24.00, 
+    false, 
+    23, 
+    8, 
+    1
+);
+
+-- Insertar 'CORRESPONSALIAS'
+SELECT public.fn_sica_actividad_insertar(
+    'CORRESPONSALIAS', 
+    'CORRESPONSALIAS', 
+    24.00, 
+    false, 
+    23, 
+    8, 
+    1
+);
+
+-- Insertar 'ADDENDA'
+SELECT public.fn_sica_actividad_insertar(
+    'ADDENDA', 
+    'ADDENDA', 
+    24.00, 
+    false, 
+    24, 
+    8, 
+    1
+);
+
+-- Insertar 'SERVICIOS'
+SELECT public.fn_sica_actividad_insertar(
+    'SERVICIOS', 
+    'SERVICIOS', 
+    24.00, 
+    false, 
+    25, 
+    8, 
+    1
+);
+
+-- Insertar 'FALTANTE DE CAJA'
+SELECT public.fn_sica_actividad_insertar(
+    'FALTANTE DE CAJA', 
+    'FALTANTE DE CAJA', 
+    24.00, 
+    false, 
+    25, 
+    8, 
+    1
+);
+
+-- Insertar 'RESULTADOS DE INVENTARIO'
+SELECT public.fn_sica_actividad_insertar(
+    'RESULTADOS DE INVENTARIO', 
+    'RESULTADOS DE INVENTARIO', 
+    48.00, 
+    false, 
+    26, 
+    7, 
+    1
+);
+
+-- Insertar 'CADUCADO EXHIBIDO'
+SELECT public.fn_sica_actividad_insertar(
+    'CADUCADO EXHIBIDO', 
+    'CADUCADO EXHIBIDO', 
+    48.00, 
+    false, 
+    26, 
+    7, 
+    1
+);
+
+-- Insertar 'SOLICITUD DE INVENTARIO'
+SELECT public.fn_sica_actividad_insertar(
+    'SOLICITUD DE INVENTARIO', 
+    'SOLICITUD DE INVENTARIO', 
+    48.00, 
+    false, 
+    26, 
+    7, 
+    1
+);
+
+-- Insertar 'AJUSTES DE INVENTARIO'
+SELECT public.fn_sica_actividad_insertar(
+    'AJUSTES DE INVENTARIO', 
+    'AJUSTES DE INVENTARIO', 
+    48.00, 
+    false, 
+    26, 
+    7, 
+    1
+);
+
+-- Insertar 'OTROS'
+SELECT public.fn_sica_actividad_insertar(
+    'OTROS', 
+    'OTROS', 
+    48.00, 
+    false, 
+    26, 
+    7, 
+    1
 );

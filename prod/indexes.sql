@@ -1,3 +1,4 @@
+
 DROP TABLE IF EXISTS public.tb_sica_catalogo_gerencias CASCADE;
 DROP TABLE IF EXISTS public.tb_sica_catalogo_grupos_usuarios CASCADE;
 DROP TABLE IF EXISTS public.tb_sica_catalogo_departamentos CASCADE;
@@ -286,3 +287,52 @@ CREATE TABLE IF NOT EXISTS public.tb_sica_relacion_usuarios_grupo_responsables
 
 ALTER TABLE public.tb_sica_relacion_usuarios_grupo_responsables
     OWNER TO postgres;
+
+
+-- Índices para la tabla tb_sica_catalogo_gerencias
+CREATE INDEX idx_tb_sica_catalogo_gerencias_id ON public.tb_sica_catalogo_gerencias (id_gerencia);
+
+-- Índices para la tabla tb_sica_catalogo_grupos_usuarios
+CREATE INDEX idx_tb_sica_catalogo_grupos_usuarios_id ON public.tb_sica_catalogo_grupos_usuarios (id_grupo_usuario);
+
+-- Índices para la tabla tb_sica_catalogo_departamentos
+CREATE INDEX idx_tb_sica_catalogo_departamentos_id ON public.tb_sica_catalogo_departamentos (id_departamento);
+CREATE INDEX idx_tb_sica_catalogo_departamentos_id_gerencia ON public.tb_sica_catalogo_departamentos (id_gerencia);
+
+-- Índices para la tabla tb_sica_grupo_usuarios_responsables
+CREATE INDEX idx_tb_sica_grupo_usuarios_responsables_id ON public.tb_sica_grupo_usuarios_responsables (id_grupo_usuario_responsable);
+CREATE INDEX idx_tb_sica_grupo_usuarios_responsables_id_departamento ON public.tb_sica_grupo_usuarios_responsables (id_departamento);
+
+-- Índices para la tabla tb_sica_catalogo_clasificacion_actividades
+CREATE INDEX idx_tb_sica_catalogo_clasificacion_actividades_id ON public.tb_sica_catalogo_clasificacion_actividades (id_clasificacion_actividad);
+CREATE INDEX idx_tb_sica_catalogo_clasificacion_actividades_id_departamento ON public.tb_sica_catalogo_clasificacion_actividades (id_departamento);
+
+-- Índices para la tabla tb_sica_catalogo_grupo_actividades
+CREATE INDEX idx_tb_sica_catalogo_grupo_actividades_id ON public.tb_sica_catalogo_grupo_actividades (id_grupo_actividad);
+CREATE INDEX idx_tb_sica_catalogo_grupo_actividades_id_clasificacion_actividad ON public.tb_sica_catalogo_grupo_actividades (id_clasificacion_actividad);
+
+-- Índices para la tabla tb_sica_catalogo_actividades
+CREATE INDEX idx_tb_sica_catalogo_actividades_id ON public.tb_sica_catalogo_actividades (id_actividad);
+CREATE INDEX idx_tb_sica_catalogo_actividades_id_grupo_actividad ON public.tb_sica_catalogo_actividades (id_grupo_actividad);
+
+-- Índices para la tabla tb_sica_atenciones
+CREATE INDEX idx_tb_sica_atenciones_id_sucursal_id_atencion ON public.tb_sica_atenciones (id_sucursal, id_atencion); 
+CREATE INDEX idx_tb_sica_atenciones_id_atencion ON public.tb_sica_atenciones (id_atencion);
+CREATE INDEX idx_tb_sica_atenciones_id_departamento_actual ON public.tb_sica_atenciones (id_departamento_actual);
+
+
+-- Índices para la tabla tb_sica_mensajes
+CREATE INDEX idx_tb_sica_mensajes_id ON public.tb_sica_mensajes (id_mensaje);
+CREATE INDEX idx_tb_sica_mensajes_id_atencion_id_sucursal ON public.tb_sica_mensajes (id_atencion, id_sucursal); 
+
+
+-- Índices para la tabla tb_sica_transferencias_atenciones
+CREATE INDEX idx_tb_sica_transferencias_atenciones_id ON public.tb_sica_transferencias_atenciones (id_transferencia);
+CREATE INDEX idx_tb_sica_transferencias_atenciones_id_atencion_id_sucursal ON public.tb_sica_transferencias_atenciones (id_atencion, id_sucursal); 
+
+
+-- Índices para la tabla tb_sica_catalogo_usuarios_sica
+CREATE INDEX idx_tb_sica_catalogo_usuarios_sica_id ON public.tb_sica_catalogo_usuarios_sica (id_usuario_sica);
+CREATE INDEX idx_tb_sica_catalogo_usuarios_sica_id_grupo_usuario ON public.tb_sica_catalogo_usuarios_sica (id_grupo_usuario);
+CREATE INDEX idx_tb_sica_catalogo_usuarios_sica_id_departamento ON public.tb_sica_catalogo_usuarios_sica (id_departamento);
+CREATE INDEX idx_tb_sica_catalogo_usuarios_sica_id_gerencia ON public.tb_sica_catalogo_usuarios_sica (id_gerencia);
